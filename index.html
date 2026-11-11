@@ -574,14 +574,11 @@ a { color: inherit; text-decoration: none; }
     };
     try { x.send(body ? JSON.stringify(body) : null); } catch (e) { end(null); }
   }
-  function hueUrl(path) { return 'http://' + hue.ip + '/api/' + hue.user + path; }
+  // Page en https : on parle au pont en https aussi (il faut avoir accepté son certificat une fois dans Safari).
+  var HUE_SCHEME = window.location.protocol === 'https:' ? 'https://' : 'http://';
+  function hueUrl(path) { return HUE_SCHEME + hue.ip + '/api/' + hue.user + path; }
   function paintHue() {
     var html = '', i;
-    if (window.location.protocol === 'https:') {
-      var plain = 'http://' + window.location.host + window.location.pathname;
-      $('hue').innerHTML = '<div class="hue-msg">Pour piloter les lampes, ouvre le dashboard à cette adresse : <a href="' + esc(plain) + '">' + esc(plain) + '</a></div>';
-      return;
-    }
     if (!hue) {
       if (hueStep === 'idle') {
         html = '<button class="hue-btn" data-hue="find">Connecter le pont Hue</button>';
@@ -592,7 +589,9 @@ a { color: inherit; text-decoration: none; }
           '<input id="hue-ip" type="text" inputmode="decimal" placeholder="192.168.1.20" autocomplete="off" autocorrect="off">' +
           '<button class="hue-btn" data-hue="ip">OK</button>';
       } else {
-        html = '<div class="hue-msg">Appuie sur le bouton rond du pont Hue, puis touche Continuer.</div>' +
+        html = (HUE_SCHEME === 'https://' ? '<div class="hue-msg">1. Touche <a href="https://' + esc(hueIp) + '/api/config" target="_blank" rel="noopener">ce lien</a>, ' +
+          'puis « Afficher les détails » et « consulter ce site web ». Reviens ici.</div>' : '') +
+          '<div class="hue-msg">' + (HUE_SCHEME === 'https://' ? '2. ' : '') + 'Appuie sur le bouton rond du pont Hue, puis touche Continuer.</div>' +
           '<button class="hue-btn" data-hue="pair">Continuer</button>';
       }
       if (hueNote) { html = '<div class="hue-msg"><b>' + esc(hueNote) + '</b></div>' + html; }
@@ -607,7 +606,7 @@ a { color: inherit; text-decoration: none; }
     $('hue').innerHTML = html + '<button class="tile lamp all" data-lamp="all">Tout éteindre</button></div>';
   }
   function loadLamps() {
-    if (!hue || window.location.protocol === 'https:') { return; }
+    if (!hue) { return; }
     hx('GET', hueUrl('/groups'), null, function (d) {
       var id, list = [];
       if (!d) { if (!lamps.length) { hueNote = 'Pont Hue injoignable.'; paintHue(); } return; }
@@ -626,7 +625,7 @@ a { color: inherit; text-decoration: none; }
     });
   }
   function huePair() {
-    hx('POST', 'http://' + hueIp + '/api', { devicetype: 'maison#ipad' }, function (d) {
+    hx('POST', HUE_SCHEME + hueIp + '/api', { devicetype: 'maison#ipad' }, function (d) {
       if (d && d[0] && d[0].success && d[0].success.username) {
         hue = { ip: hueIp, user: d[0].success.username };
         store('hue', JSON.stringify(hue));
@@ -635,7 +634,7 @@ a { color: inherit; text-decoration: none; }
       } else if (d && d[0] && d[0].error) {
         hueNote = 'Bouton pas encore pressé. Appuie dessus et réessaie.'; paintHue();
       } else {
-        hueNote = 'Pas de réponse du pont à ' + hueIp + '.'; hueStep = 'ip'; paintHue();
+        hueNote = 'Pas de réponse du pont à ' + hueIp + (HUE_SCHEME === 'https://' ? '. As-tu accepté l\'avertissement de l\'étape 1 ?' : '.'); paintHue();
       }
     });
   }
