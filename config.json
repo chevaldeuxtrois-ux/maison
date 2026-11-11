@@ -1,0 +1,45 @@
+{
+  "site_url": "https://chevaldeuxtrois-ux.github.io/maison/",
+  "weather": {"city": "Bruxelles", "latitude": 50.8503, "longitude": 4.3517},
+  "stations": [
+    {"id": "inter", "name": "France Inter", "color": "#e20134", "url": "https://icecast.radiofrance.fr/franceinter-midfi.mp3"},
+    {"id": "info", "name": "franceinfo", "color": "#f2b600", "url": "https://icecast.radiofrance.fr/franceinfo-midfi.mp3"},
+    {"id": "culture", "name": "France Culture", "color": "#7a3fc4", "url": "https://icecast.radiofrance.fr/franceculture-midfi.mp3"},
+    {"id": "musique", "name": "France Musique", "color": "#d6336c", "url": "https://icecast.radiofrance.fr/francemusique-midfi.mp3"},
+    {"id": "fip", "name": "FIP", "color": "#ff4f9a", "url": "https://icecast.radiofrance.fr/fip-midfi.mp3"},
+    {"id": "mouv", "name": "Mouv'", "color": "#12a56b", "url": "https://icecast.radiofrance.fr/mouv-midfi.mp3"},
+    {"id": "fipjazz", "name": "FIP Jazz", "color": "#f08a24", "url": "https://icecast.radiofrance.fr/fipjazz-midfi.mp3"},
+    {"id": "fipgroove", "name": "FIP Groove", "color": "#2a8fe6", "url": "https://icecast.radiofrance.fr/fipgroove-midfi.mp3"}
+  ],
+  "news": [
+    {"id": "lemonde", "name": "Le Monde", "strip": " - Le Monde.fr", "urls": [
+      "https://www.lemonde.fr/rss/une.xml",
+      "https://news.google.com/rss/search?q=when:24h+site:lemonde.fr&hl=fr&gl=FR&ceid=FR:fr"]},
+    {"id": "cnn", "name": "CNN", "strip": " - CNN", "urls": [
+      "https://news.google.com/rss/search?q=when:24h+site:cnn.com+-intitle:sitemap+-site:cnn.com/business/calculators&hl=en-US&gl=US&ceid=US:en"]},
+    {"id": "filmfrancais", "name": "Le Film français", "urls": [
+      "https://news.google.com/rss/search?q=when:7d+site:lefilmfrancais.com&hl=fr&gl=FR&ceid=FR:fr"]}
+  ],
+  "podcasts": [
+    {"id": "geopolitique", "name": "Géopolitique", "search": "Géopolitique France Inter", "match": "géopolitique"},
+    {"id": "edito-politique", "name": "L'édito politique", "search": "L'édito politique France Inter", "match": "dito politique"},
+    {"id": "edito-eco", "name": "L'édito éco", "search": "L'édito éco France Inter", "match": "dito éco"},
+    {"id": "instant-m", "name": "L'instant M", "search": "L'instant M France Inter", "match": "instant m"},
+    {"id": "marie-de-brauer", "name": "Marie de Brauer", "search": "Marie de Brauer", "match": "brauer"},
+    {"id": "merwane-benlazar", "name": "Merwane Benlazar", "search": "Merwane Benlazar", "match": "benlazar"},
+    {"id": "la-derniere", "name": "La dernière", "search": "La dernière Radio Nova", "match": "la dernière"},
+    {"id": "aymeric-lompret", "name": "Aymeric Lompret", "search": "Aymeric Lompret", "match": "lompret"},
+    {"id": "revue-de-presse", "name": "La revue de presse", "search": "La revue de presse France Inter", "match": "revue de presse"},
+    {"id": "code-a-change", "name": "Le code a changé", "search": "Le code a changé", "match": "code a chang"},
+    {"id": "gout-de-m", "name": "Le Goût de M", "search": "Le Goût de M", "match": "goût de m"},
+    {"id": "masque-plume", "name": "Le Masque et la Plume", "search": "Le Masque et la Plume", "match": "masque et la plume"},
+    {"id": "on-aura-tout-vu", "name": "On aura tout vu", "search": "On aura tout vu France Inter", "match": "on aura tout vu"},
+    {"id": "on-narrete-pas-leco", "name": "On n'arrête pas l'éco", "search": "On n'arrête pas l'éco", "match": "arrête pas l"},
+    {"id": "thinkerview", "name": "Thinkerview", "search": "Thinkerview", "match": "thinkerview"},
+    {"id": "totemic", "name": "Totémic", "search": "Totémic France Inter", "match": "tot"},
+    {"id": "on-va-deguster", "name": "On va déguster", "search": "On va déguster", "match": "on va déguster"},
+    {"id": "le-18-20", "name": "Le 18/20", "search": "Le 18/20 France Inter", "match": "18/20"},
+    {"id": "zoom-zoom-zen", "name": "Zoom Zoom Zen", "search": "Zoom Zoom Zen", "match": "zoom zoom zen"},
+    {"id": "interception", "name": "Interception", "search": "Interception France Inter", "match": "interception"}
+  ]
+}

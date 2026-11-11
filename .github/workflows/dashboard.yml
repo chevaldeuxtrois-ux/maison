@@ -1,0 +1,46 @@
+name: Mise à jour du dashboard
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Récupérer météo, titres et épisodes
+        run: python3 build.py
+      - name: Préparer le site
+        run: |
+          mkdir site
+          cp index.html icone.png data.json site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
+      - name: Garder la planification active
+        # GitHub coupe les tâches planifiées d'un dépôt resté 60 jours sans activité.
+        run: |
+          last=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - last )) -gt 2592000 ]; then
+            date -u +%F > .keepalive
+            git config user.name "dashboard-maison"
+            git config user.email "actions@users.noreply.github.com"
+            git add .keepalive
+            git commit -m "Maintien de la planification [skip ci]"
+            git push
+          fi
