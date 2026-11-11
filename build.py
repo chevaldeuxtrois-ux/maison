@@ -131,6 +131,12 @@ def build_station(st, prev):
             url = r.get("url_resolved") or r.get("url") or ""
             if url.startswith("http") and ".m3u8" not in url:
                 out["url"], out["found"] = url, r.get("name", "")
+                try:
+                    req = urllib.request.Request(url, headers={"User-Agent": UA})
+                    with urllib.request.urlopen(req, timeout=15) as resp:
+                        out["type"], out["final"] = resp.headers.get("Content-Type", ""), resp.geturl()
+                except Exception as ex:
+                    out["type"] = "erreur : %s" % ex
                 return out
         raise RuntimeError("aucun flux pour " + st["lookup"])
     except Exception as ex:
@@ -160,14 +166,18 @@ def build_podcast(pod, prev):
     out = {"id": pod["id"], "name": pod["name"], "episodes": []}
     try:
         if pod.get("feed"):
-            out["feed"], out["found"] = pod["feed"], pod["name"]
+            out["feed"], out["found"] = pod["feed"], ""
         elif prev and prev.get("feed") and prev.get("search") == pod["search"] and prev.get("match") == pod.get("match"):
             out["feed"], out["found"], out["by"] = prev["feed"], prev.get("found", ""), prev.get("by", "")
         else:
             out["feed"], out["found"], out["by"] = find_feed(pod)
         out["search"], out["match"] = pod.get("search"), pod.get("match")
+        raw = fetch(out["feed"])
+        if not out.get("found"):
+            m = re.search(rb"<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>", raw[:4000], re.S)
+            out["found"] = clean(m.group(1).decode("utf-8", "replace")) if m else ""
         eps = [{"title": i["title"], "ts": i["ts"], "audio": i["audio"], "dur": i["dur"]}
-               for i in parse_items(fetch(out["feed"])) if i["audio"]]
+               for i in parse_items(raw) if i["audio"]]
         out["episodes"] = eps[:EPISODES]
     except Exception as ex:
         log("podcast %s : %s" % (pod["id"], ex))

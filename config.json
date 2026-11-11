@@ -113,37 +113,43 @@
       "id": "geopolitique",
       "name": "Géopolitique",
       "search": "Géopolitique France Inter",
-      "match": "géopolitique"
+      "match": "géopolitique",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_d68fe66a-f650-4cb5-a9b8-bb0101d51c64.xml"
     },
     {
       "id": "edito-politique",
       "name": "L'édito politique",
       "search": "L'édito politique France Inter",
-      "match": "dito politique"
+      "match": "dito politique",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_700d1d9a-a288-4184-a462-3c45ae243795.xml"
     },
     {
       "id": "edito-eco",
       "name": "L'édito éco",
       "search": "L'édito éco France Inter",
-      "match": "dito éco"
+      "match": "dito éco",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_ea167ad1-58be-4d7b-98ae-62fa845982bd.xml"
     },
     {
       "id": "instant-m",
       "name": "L'instant M",
       "search": "L'instant M France Inter",
-      "match": "instant m"
+      "match": "instant m",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_74ccb30d-1988-43b3-aec4-086578ac174e.xml"
     },
     {
       "id": "marie-de-brauer",
       "name": "Marie de Brauer",
       "search": "Marie de Brauer",
-      "match": "brauer"
+      "match": "brauer",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_a0460839-49fa-4cb3-8d18-86221b48326b.xml"
     },
     {
       "id": "merwane-benlazar",
       "name": "Merwane Benlazar",
       "search": "Merwane Benlazar",
-      "match": "benlazar"
+      "match": "benlazar",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_bd262438-4b82-415d-9e02-a65d797bd6fa.xml"
     },
     {
       "id": "la-derniere",
@@ -161,13 +167,15 @@
       "id": "revue-de-presse",
       "name": "La revue de presse",
       "search": "La revue de presse France Inter",
-      "match": "revue de presse"
+      "match": "revue de presse",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_0d44f01f-f01a-11e1-a7b7-782bcb76618d.xml"
     },
     {
       "id": "code-a-change",
       "name": "Le code a changé",
       "search": "Le code a changé",
-      "match": "code a chang"
+      "match": "code a chang",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_3957c833-0b28-4314-8427-2a1d1e103381.xml"
     },
     {
       "id": "gout-de-m",
@@ -179,19 +187,22 @@
       "id": "masque-plume",
       "name": "Le Masque et la Plume",
       "search": "Le Masque et la Plume",
-      "match": "masque et la plume"
+      "match": "masque et la plume",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_c266b241-3ed9-47ed-912f-4eabdc2f0275.xml"
     },
     {
       "id": "on-aura-tout-vu",
       "name": "On aura tout vu",
       "search": "On aura tout vu France Inter",
-      "match": "on aura tout vu"
+      "match": "on aura tout vu",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_26d86f70-14a0-40f8-a443-08b75be7a2ed.xml"
     },
     {
       "id": "on-narrete-pas-leco",
       "name": "On n'arrête pas l'éco",
       "search": "On n'arrête pas l'éco",
-      "match": "arrête pas l"
+      "match": "arrête pas l",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_fede8db2-46f3-4ef1-8182-f17e3398edec.xml"
     },
     {
       "id": "thinkerview",
@@ -203,31 +214,39 @@
       "id": "totemic",
       "name": "Totémic",
       "search": "Totémic France Inter",
-      "match": "tot"
+      "match": "tot",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_25f7b0b7-c267-4cee-9477-abc630e6467b.xml"
     },
     {
       "id": "on-va-deguster",
       "name": "On va déguster",
       "search": "On va déguster",
-      "match": "on va déguster"
+      "match": "on va déguster",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_bc42377a-4654-4428-98df-1d16b748e580.xml"
     },
     {
-      "id": "le-18-20",
-      "name": "Le 18/20",
-      "search": "Le 18/20 France Inter",
-      "match": "18/20"
+      "id": "telephone-sonne",
+      "name": "Le 18/20 · Le téléphone sonne",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_d195f7c2-c97e-4539-a2dc-d001c324f832.xml"
+    },
+    {
+      "id": "un-jour-dans-le-monde",
+      "name": "Le 18/20 · Un jour dans le monde",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_cbfec6a7-9e47-4699-a8b3-bc2bad2968d7.xml"
     },
     {
       "id": "zoom-zoom-zen",
       "name": "Zoom Zoom Zen",
       "search": "Zoom Zoom Zen",
-      "match": "zoom zoom zen"
+      "match": "zoom zoom zen",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_9c7ba162-d528-46e6-be4e-9140d60fc2c1.xml"
     },
     {
       "id": "interception",
       "name": "Interception",
       "search": "Interception France Inter",
-      "match": "interception"
+      "match": "interception",
+      "feed": "https://radiofrance-podcast.net/podcast09/podcast_886cc3b6-cd86-11e0-b8ee-842b2b72cd1d.xml"
     }
   ]
 }
