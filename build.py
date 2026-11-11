@@ -223,6 +223,15 @@ def main():
             "news": news, "podcasts": podcasts}
     with open(os.path.join(BASE, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+    for s in stations:
+        if s.get("found"):
+            log("bilan radio %s | %s | %s | %s | %s" % (s["id"], s["url"], s["found"], s.get("type"), s.get("final")))
+    for p in podcasts:
+        e = p["episodes"][0] if p["episodes"] else None
+        log("bilan podcast %s | %s | %d | %s | %s | %s" % (
+            p["name"], p.get("found"), len(p["episodes"]),
+            time.strftime("%d/%m", time.gmtime(e["ts"])) if e else "-",
+            e["title"][:50] if e else p.get("error"), e["audio"].split("/")[2] if e else ""))
     log("ok : %d podcasts avec épisodes sur %d, %s titres" % (
         sum(1 for p in podcasts if p["episodes"]), len(podcasts), "+".join(str(len(n["items"])) for n in news)))
 
