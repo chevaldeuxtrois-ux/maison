@@ -118,6 +118,28 @@ def build_weather(cfg):
     }
 
 
+def build_station(st, prev):
+    """Adresse du direct : celle du fichier de réglages, sinon l'annuaire radio-browser.info."""
+    out = {"id": st["id"], "name": st["name"], "short": st.get("short", st["name"]), "url": st.get("url", "")}
+    if out["url"] or not st.get("lookup"):
+        return out
+    try:
+        q = urllib.parse.urlencode({"name": st["lookup"], "order": "votes", "reverse": "true",
+                                    "hidebroken": "true", "limit": 5})
+        found = json.loads(fetch("https://all.api.radio-browser.info/json/stations/search?" + q).decode("utf-8"))
+        for r in found:
+            url = r.get("url_resolved") or r.get("url") or ""
+            if url.startswith("http") and ".m3u8" not in url:
+                out["url"], out["found"] = url, r.get("name", "")
+                return out
+        raise RuntimeError("aucun flux pour " + st["lookup"])
+    except Exception as ex:
+        log("radio %s : %s" % (st["id"], ex))
+        if prev and prev.get("url"):
+            out["url"], out["found"] = prev["url"], prev.get("found", "")
+    return out
+
+
 def find_feed(pod):
     """Retrouve le flux d'un podcast par son nom dans l'annuaire Apple Podcasts."""
     q = urllib.parse.urlencode({"media": "podcast", "country": "fr", "limit": 10, "term": pod["search"]})
@@ -184,7 +206,10 @@ def main():
     with ThreadPoolExecutor(max_workers=4) as pool:
         podcasts = list(pool.map(lambda p: build_podcast(p, prev_pods.get(p["id"])), cfg["podcasts"]))
 
-    data = {"updated": int(time.time()), "stations": cfg["stations"], "weather": weather,
+    prev_st = {s["id"]: s for s in prev.get("stations", [])}
+    stations = [s for s in (build_station(st, prev_st.get(st["id"])) for st in cfg["stations"]) if s["url"]]
+
+    data = {"updated": int(time.time()), "stations": stations, "weather": weather,
             "news": news, "podcasts": podcasts}
     with open(os.path.join(BASE, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
