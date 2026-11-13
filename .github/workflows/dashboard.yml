@@ -25,7 +25,7 @@ jobs:
       - name: Préparer le site
         run: |
           mkdir site
-          cp index.html icone.png data.json site/
+          cp index.html apercu.html icone.png data.json site/
           cp -r fonts site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

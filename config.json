@@ -10,49 +10,57 @@
       "id": "inter",
       "name": "France Inter",
       "url": "https://icecast.radiofrance.fr/franceinter-midfi.mp3",
-      "short": "Inter"
+      "short": "Inter",
+      "lookup": "France Inter"
     },
     {
       "id": "info",
       "name": "franceinfo",
       "url": "https://icecast.radiofrance.fr/franceinfo-midfi.mp3",
-      "short": "franceinfo"
+      "short": "franceinfo",
+      "lookup": "France Info"
     },
     {
       "id": "culture",
       "name": "France Culture",
       "url": "https://icecast.radiofrance.fr/franceculture-midfi.mp3",
-      "short": "Culture"
+      "short": "Culture",
+      "lookup": "France Culture"
     },
     {
       "id": "musique",
       "name": "France Musique",
       "url": "https://icecast.radiofrance.fr/francemusique-midfi.mp3",
-      "short": "Musique"
+      "short": "Musique",
+      "lookup": "France Musique"
     },
     {
       "id": "fip",
       "name": "FIP",
       "url": "https://icecast.radiofrance.fr/fip-midfi.mp3",
-      "short": "FIP"
+      "short": "FIP",
+      "lookup": "FIP"
     },
     {
       "id": "mouv",
       "name": "Mouv'",
       "url": "https://icecast.radiofrance.fr/mouv-midfi.mp3",
-      "short": "Mouv'"
+      "short": "Mouv'",
+      "lookup": "Mouv"
     },
     {
       "id": "fipjazz",
       "name": "FIP Jazz",
       "url": "https://icecast.radiofrance.fr/fipjazz-midfi.mp3",
-      "short": "FIP Jazz"
+      "short": "FIP Jazz",
+      "lookup": "FIP Jazz"
     },
     {
       "id": "fipgroove",
       "name": "FIP Groove",
       "url": "https://icecast.radiofrance.fr/fipgroove-midfi.mp3",
-      "short": "FIP Groove"
+      "short": "FIP Groove",
+      "lookup": "FIP Groove"
     },
     {
       "id": "pommedapi",
@@ -93,7 +101,8 @@
       "name": "WCBS-FM 101.1",
       "short": "WCBS 101.1",
       "lookup": "WCBS",
-      "url": "https://live.amperwave.net/direct/audacy-wcbsfmaac-imc"
+      "url": "https://live.amperwave.net/direct/audacy-wcbsfmaac-imc",
+      "retire": true
     },
     {
       "id": "kday",
@@ -108,6 +117,30 @@
       "short": "Hot 97",
       "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTFM.mp3",
       "lookup": "Hot 97"
+    },
+    {
+      "id": "krth",
+      "name": "K-EARTH 101",
+      "short": "K-Earth 101",
+      "url": "https://live.amperwave.net/direct/audacy-krthfmaac-imc",
+      "lookup": "KRTH",
+      "apercu": true
+    },
+    {
+      "id": "wfmu",
+      "name": "WFMU",
+      "short": "WFMU",
+      "url": "https://stream0.wfmu.org/freeform-128k",
+      "lookup": "WFMU",
+      "apercu": true
+    },
+    {
+      "id": "wkcr",
+      "name": "WKCR 89.9 FM",
+      "short": "WKCR 89.9",
+      "url": "https://wkcr.streamguys1.com/live",
+      "lookup": "WKCR",
+      "apercu": true
     }
   ],
   "news": [

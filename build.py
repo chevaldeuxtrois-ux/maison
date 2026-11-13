@@ -165,6 +165,44 @@ def build_station(st, prev):
     return out
 
 
+def plain(text):
+    """Nom réduit à ses lettres et chiffres, sans accents, pour comparer."""
+    import unicodedata
+    text = unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode("ascii").lower()
+    return re.sub(r"[^a-z0-9]", "", text)
+
+
+def find_logo(st, prev):
+    """Adresse du logo officiel de la station, telle que publiée dans l'annuaire radio-browser.info.
+
+    La page affiche l'image depuis cette adresse ; rien n'est copié ici. On vérifie qu'elle répond bien en image.
+    """
+    if st.get("logo"):
+        return st["logo"], "réglages"
+    if prev and prev.get("logo"):
+        return prev["logo"], prev.get("logo_from", "")
+    wanted = [plain(st.get("lookup", "")), plain(st["name"]), plain(st.get("short", ""))]
+    q = urllib.parse.urlencode({"name": st.get("lookup") or st["name"], "order": "votes", "reverse": "true", "limit": 25})
+    found = json.loads(fetch("https://all.api.radio-browser.info/json/stations/search?" + q).decode("utf-8"))
+    found.sort(key=lambda r: 0 if plain(r.get("name", "")) in wanted else 1)
+    seen = set()
+    for r in found[:12]:
+        url = r.get("favicon") or ""
+        if not url.startswith("https://") or url in seen or url.lower().split("?")[0].endswith(".ico"):
+            continue
+        seen.add(url)
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                ctype = resp.headers.get("Content-Type", "")
+                size = len(resp.read(600000))
+        except Exception:
+            continue
+        if ctype.lower().startswith("image/") and size >= 2500:
+            return url, "%s (%s, %d octets)" % (r.get("name", ""), ctype, size)
+    return "", "aucun logo exploitable"
+
+
 def find_feed(pod):
     """Retrouve le flux d'un podcast par son nom dans l'annuaire Apple Podcasts."""
     q = urllib.parse.urlencode({"media": "podcast", "country": "fr", "limit": 10, "term": pod["search"]})
@@ -235,10 +273,22 @@ def main():
     with ThreadPoolExecutor(max_workers=4) as pool:
         podcasts = list(pool.map(lambda p: build_podcast(p, prev_pods.get(p["id"])), cfg["podcasts"]))
 
-    prev_st = {s["id"]: s for s in prev.get("stations", [])}
-    stations = [s for s in (build_station(st, prev_st.get(st["id"])) for st in cfg["stations"]) if s["url"]]
+    prev_st = {s["id"]: s for s in prev.get("stations", []) + prev.get("stations_apercu", [])}
+    built = []
+    for st in cfg["stations"]:
+        s = build_station(st, prev_st.get(st["id"]))
+        try:
+            s["logo"], s["logo_from"] = find_logo(st, prev_st.get(st["id"]))
+        except Exception as ex:
+            s["logo"], s["logo_from"] = "", "erreur : %s" % ex
+        log("bilan logo %s | %s | %s" % (st["id"], s["logo"], s["logo_from"]))
+        s["_apercu"], s["_retire"] = bool(st.get("apercu")), bool(st.get("retire"))
+        built.append(s)
+    strip = lambda s: {k: v for k, v in s.items() if not k.startswith("_")}
+    stations = [strip(s) for s in built if s["url"] and not s["_apercu"]]
+    stations_apercu = [strip(s) for s in built if s["url"] and not s["_retire"]]
 
-    data = {"updated": int(time.time()), "stations": stations, "spotify": cfg.get("spotify_client_id", ""), "weather": weather,
+    data = {"updated": int(time.time()), "stations": stations, "stations_apercu": stations_apercu, "spotify": cfg.get("spotify_client_id", ""), "weather": weather,
             "news": news, "podcasts": podcasts}
     with open(os.path.join(BASE, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
