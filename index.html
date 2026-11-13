@@ -139,6 +139,11 @@ a { color: inherit; text-decoration: none; }
 .sp-ctl button:active { opacity: 0.7; }
 .sp-ctl .pp { background: #0c0c0c; color: #f5821f; }
 .sp-ctl svg { width: 20px; height: 20px; display: block; margin: 0 auto; }
+.sp-help { font-size: 12px; line-height: 1.3; opacity: 0.85; margin-top: 10px; }
+.sp-share { margin-top: 10px; font-size: 12px; line-height: 1.3; }
+.sp-share img { display: block; width: 180px; height: 180px; background: #fff; border-radius: 6px; margin-bottom: 8px; }
+.sp-link { margin-top: 6px; word-break: break-all; -webkit-user-select: text; user-select: text; background: rgba(12, 12, 12, 0.25); border-radius: 6px; padding: 8px; }
+#sp-now { max-height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .sp-dev { display: block; width: 100%; margin-top: 8px; font-size: 12px; opacity: 0.85; }
 
 /* Actualités */
@@ -670,8 +675,15 @@ a { color: inherit; text-decoration: none; }
     x.send(form(params));
   }
   function spRefresh(cb) {
-    if (!SP.tok || !SP.tok.refresh) { cb(false); return; }
-    spToken({ grant_type: 'refresh_token', refresh_token: SP.tok.refresh, client_id: SP.cid }, cb);
+    if (!SP.tok || !SP.tok.refresh || !SP.cid) { cb(false); return; }
+    // Un seul renouvellement à la fois : Spotify invalide l'ancienne autorisation dès qu'il en délivre une nouvelle.
+    if (SP.waiting) { SP.waiting.push(cb); return; }
+    SP.waiting = [cb];
+    spToken({ grant_type: 'refresh_token', refresh_token: SP.tok.refresh, client_id: SP.cid }, function (ok) {
+      var list = SP.waiting, i;
+      SP.waiting = null;
+      for (i = 0; i < list.length; i++) { list[i](ok); }
+    });
   }
   function sp(method, path, body, cb) {
     var retried = false;
@@ -712,7 +724,9 @@ a { color: inherit; text-decoration: none; }
     if (!SP.cid) { $('sp-now').innerHTML = '<div class="empty">Spotify n\'est pas encore configuré.</div>'; $('sp-lists').innerHTML = ''; return; }
     if (!SP.tok) {
       $('sp-now').innerHTML = (SP.note ? '<div class="hue-msg"><b>' + esc(SP.note) + '</b></div>' : '') +
-        '<button class="hue-btn" data-sp="login" style="margin-left:0">Connecter Spotify</button>';
+        '<button class="hue-btn" data-sp="login" style="margin-left:0">Connecter Spotify</button>' +
+        '<div class="sp-help">Si la page Spotify ne répond pas sur cet iPad : ouvre cette même adresse sur ton téléphone, connecte Spotify là-bas, ' +
+        'puis touche « Envoyer la connexion à un autre appareil ».</div>';
       $('sp-lists').innerHTML = '';
       return;
     }
@@ -727,7 +741,11 @@ a { color: inherit; text-decoration: none; }
       '<button data-sp="next" aria-label="Titre suivant">' + SP_NEXT + '</button></div>' +
       '<button class="sp-dev" data-sp="device">' + (dev ? 'Sortie : ' + esc(dev.name) + (SP.devices.length > 1 ? ' (toucher pour changer)' : '')
         : 'Aucun appareil : ouvre l\'app Spotify sur l\'iPad et lance un titre.') + '</button>' +
-      (SP.note ? '<div class="sp-artist"><b>' + esc(SP.note) + '</b></div>' : '');
+      (SP.note ? '<div class="sp-artist"><b>' + esc(SP.note) + '</b></div>' : '') +
+      (SP.share ? '<div class="sp-share">' + (SP.qr ? '<img alt="Code à scanner" src="' + SP.qr + '">' : '') +
+        '<div>Sur l\'iPad, ouvre l\'appareil photo et vise ce code, puis touche la bannière qui apparaît. Ou envoie-toi ce lien et ouvre-le dans Safari sur l\'iPad :</div>' +
+        '<div class="sp-link">' + esc(SP.share) + '</div></div>'
+        : '<button class="sp-dev" data-sp="share">Envoyer la connexion à un autre appareil</button>');
     $('sp-now').innerHTML = html;
   }
   function paintSpLists() {
@@ -790,6 +808,20 @@ a { color: inherit; text-decoration: none; }
       }
       else if (act === 'next') { sp('POST', '/me/player/next', null, spDone); }
       else if (act === 'prev') { sp('POST', '/me/player/previous', null, spDone); }
+      else if (act === 'share') {
+        // Le lien transporte l'autorisation dans sa partie « # », qui n'est jamais envoyée à un serveur.
+        spRefresh(function () {
+          if (!SP.tok) { paintSp(); return; }
+          SP.share = spHere() + '#sp=' + encodeURIComponent(SP.tok.refresh);
+          paintSp();
+          var sc = document.createElement('script');
+          sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+          sc.onload = function () {
+            try { var q = window.qrcode(0, 'L'); q.addData(SP.share); q.make(); SP.qr = q.createDataURL(4, 8); paintSp(); } catch (e) {}
+          };
+          document.head.appendChild(sc);
+        });
+      }
       else if (act === 'device') {
         spDevices(function () {
           dev = spTarget(); next = null;
@@ -815,6 +847,15 @@ a { color: inherit; text-decoration: none; }
   }
   $('tab-pod').onclick = function () { setTab('pod'); };
   $('tab-sp').onclick = function () { setTab('sp'); };
+  // Connexion reçue d'un autre appareil : #sp=… dans l'adresse.
+  (function () {
+    var m = /^#sp=(.+)$/.exec(window.location.hash);
+    if (!m) { return; }
+    try { window.history.replaceState(null, '', window.location.pathname); } catch (e) { window.location.hash = ''; }
+    SP.tok = { access: '', refresh: decodeURIComponent(m[1]), exp: 0 };
+    store('spotify', JSON.stringify(SP.tok));
+    tab = 'sp';
+  }());
   // Retour de la page d'autorisation Spotify : ?code=… dans l'adresse.
   (function () {
     var m = /[?&]code=([^&]+)/.exec(window.location.search), denied = /[?&]error=/.test(window.location.search);
@@ -952,7 +993,7 @@ a { color: inherit; text-decoration: none; }
       }
       if (data && data.updated === d.updated) { paintFreshness(); return; }
       data = d;
-      if (d.spotify && d.spotify !== SP.cid) { SP.cid = d.spotify; if (tab === 'sp') { paintSp(); } }
+      if (d.spotify && d.spotify !== SP.cid) { SP.cid = d.spotify; store('sp_cid', SP.cid); if (tab === 'sp') { paintSp(); spOpen(); } }
       stations = d.stations || [];
       pods = d.podcasts || [];
       paintStations();

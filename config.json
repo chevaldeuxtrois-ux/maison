@@ -82,11 +82,17 @@
       "lookup": "BBC World Service"
     },
     {
-      "id": "wbls",
-      "name": "WBLS 107.5 FM",
-      "short": "WBLS 107.5",
-      "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/WBLSFM.mp3",
-      "lookup": "WBLS"
+      "id": "bbc1",
+      "name": "BBC Radio 1",
+      "short": "BBC Radio 1",
+      "lookup": "BBC Radio 1",
+      "url": "https://as-hls-ww-live.akamaized.net/pool_01505109/live/ww/bbc_radio_one/bbc_radio_one.isml/bbc_radio_one-audio%3d96000.norewind.m3u8"
+    },
+    {
+      "id": "wcbs",
+      "name": "WCBS-FM 101.1",
+      "short": "WCBS 101.1",
+      "lookup": "WCBS-FM"
     },
     {
       "id": "kday",

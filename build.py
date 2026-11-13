@@ -126,7 +126,7 @@ def probe(url):
 
 
 def is_audio(ctype):
-    return ctype.lower().startswith("audio/") or "ogg" in ctype.lower()
+    return ctype.lower().startswith("audio/") or "ogg" in ctype.lower() or "mpegurl" in ctype.lower()
 
 
 def build_station(st, prev):
