@@ -14,8 +14,9 @@
       "lookup": "France Inter",
       "country": "FR",
       "logo": [
-        "https://charte.radiofrance.fr/images/franceinter/franceinter-avatar.png"
-      ]
+        "https://commons.wikimedia.org/wiki/Special:FilePath/France_Inter_logo_2021.svg"
+      ],
+      "site": "https://www.radiofrance.fr/franceinter"
     },
     {
       "id": "info",
@@ -25,8 +26,10 @@
       "lookup": "France Info",
       "country": "FR",
       "logo": [
-        "https://charte.radiofrance.fr/images/franceinfo/franceinfo-avatar.png"
-      ]
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Franceinfo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/France_Info_-_2018.svg"
+      ],
+      "site": "https://www.francetvinfo.fr/"
     },
     {
       "id": "culture",
@@ -36,8 +39,10 @@
       "lookup": "France Culture",
       "country": "FR",
       "logo": [
-        "https://charte.radiofrance.fr/images/franceculture/franceculture-avatar.png"
-      ]
+        "https://commons.wikimedia.org/wiki/Special:FilePath/France_Culture_logo_2021.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/France_Culture_-_2008.svg"
+      ],
+      "site": "https://www.radiofrance.fr/franceculture"
     },
     {
       "id": "musique",
@@ -47,8 +52,9 @@
       "lookup": "France Musique",
       "country": "FR",
       "logo": [
-        "https://charte.radiofrance.fr/images/francemusique/francemusique-avatar.png"
-      ]
+        "https://commons.wikimedia.org/wiki/Special:FilePath/France_Musique_logo_2021.svg"
+      ],
+      "site": "https://www.radiofrance.fr/francemusique"
     },
     {
       "id": "fip",
@@ -78,7 +84,8 @@
       "url": "https://icecast.radiofrance.fr/fipjazz-midfi.mp3",
       "short": "FIP Jazz",
       "lookup": "FIP Jazz",
-      "country": "FR"
+      "country": "FR",
+      "logo": []
     },
     {
       "id": "fipgroove",
@@ -86,22 +93,35 @@
       "url": "https://icecast.radiofrance.fr/fipgroove-midfi.mp3",
       "short": "FIP Groove",
       "lookup": "FIP Groove",
-      "country": "FR"
+      "country": "FR",
+      "logo": []
     },
     {
       "id": "pommedapi",
       "name": "Radio Pomme d'Api",
       "short": "Pomme d'Api",
       "lookup": "Pomme d'Api",
-      "country": "FR"
+      "country": "FR",
+      "logo": [],
+      "site": "https://www.radiopommedapi.com/"
     },
     {
       "id": "couleur3",
       "name": "Couleur 3",
       "short": "Couleur 3",
-      "url": "https://stream.srg-ssr.ch/m/couleur3/mp3_128",
+      "url": "https://stream.srg-ssr.ch/srgssr/couleur3/mp3/128",
       "lookup": "Couleur 3",
-      "country": "CH"
+      "country": "CH",
+      "logo": [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Couleur_3_logo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Couleur_3_Logo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/RTS_Couleur_3_logo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Couleur3.svg"
+      ],
+      "site": "https://www.rts.ch/couleur3/",
+      "alt": [
+        "https://stream.srg-ssr.ch/m/couleur3/mp3_128"
+      ]
     },
     {
       "id": "nova",
@@ -109,15 +129,50 @@
       "short": "Nova",
       "url": "https://novazz.ice.infomaniak.ch/novazz-128.mp3",
       "lookup": "Radio Nova",
-      "country": "FR"
+      "country": "FR",
+      "logo": [],
+      "site": "https://www.nova.fr/"
     },
     {
       "id": "bbc",
       "name": "BBC World Service",
       "short": "BBC World",
-      "url": "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+      "url": "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
       "lookup": "BBC World Service",
-      "country": "GB"
+      "country": "GB",
+      "logo": [
+        "https://rmp.files.bbci.co.uk/rmp-shared-assets/1.4.0/img/network-logos/national/bbc_world_service_colour.svg"
+      ],
+      "alt": [
+        "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
+      ]
+    },
+    {
+      "id": "npr",
+      "name": "NPR News",
+      "short": "NPR",
+      "url": "https://npr-ice.streamguys1.com/live.mp3",
+      "lookup": "NPR",
+      "country": "US",
+      "logo": [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/National_Public_Radio_logo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/NPR_logo.svg"
+      ],
+      "site": "https://www.npr.org/"
+    },
+    {
+      "id": "abcnews",
+      "name": "ABC NewsRadio",
+      "short": "ABC NewsRadio",
+      "url": "https://live-radio01.mediahubaustralia.com/PBW/mp3/",
+      "lookup": "ABC NewsRadio",
+      "country": "AU",
+      "logo": [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/ABC_NewsRadio_logo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/ABC_News_Radio_logo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/ABC_NewsRadio.svg"
+      ],
+      "site": "https://www.abc.net.au/news/newsradio"
     },
     {
       "id": "bbc1",
@@ -127,17 +182,10 @@
       "url": "https://as-hls-ww-live.akamaized.net/pool_01505109/live/ww/bbc_radio_one/bbc_radio_one.isml/bbc_radio_one-audio%3d96000.norewind.m3u8",
       "country": "GB",
       "logo": [
-        "https://rmp.files.bbci.co.uk/rmp-shared-assets/1.4.0/img/network-logos/national/bbc_radio_one_colour.svg"
+        "https://rmp.files.bbci.co.uk/rmp-shared-assets/1.4.0/img/network-logos/national/bbc_radio_one_colour.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/BBC_Radio_1_2022.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/BBC_Radio_1_2021.svg"
       ]
-    },
-    {
-      "id": "wcbs",
-      "name": "WCBS-FM 101.1",
-      "short": "WCBS 101.1",
-      "lookup": "WCBS",
-      "url": "https://live.amperwave.net/direct/audacy-wcbsfmaac-imc",
-      "retire": true,
-      "country": "US"
     },
     {
       "id": "kday",
@@ -145,7 +193,12 @@
       "short": "93.5 KDAY",
       "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KDAYFM.mp3",
       "lookup": "KDAY",
-      "country": "US"
+      "country": "US",
+      "logo": [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/KDAY_logo.png",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/KDAY_93.5_logo.png"
+      ],
+      "site": "https://www.935kday.com/"
     },
     {
       "id": "hot97",
@@ -153,7 +206,9 @@
       "short": "Hot 97",
       "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTFM.mp3",
       "lookup": "Hot 97",
-      "country": "US"
+      "country": "US",
+      "logo": [],
+      "site": "https://www.hot97.com/"
     },
     {
       "id": "krth",
@@ -161,8 +216,13 @@
       "short": "K-Earth 101",
       "url": "https://live.amperwave.net/direct/audacy-krthfmaac-imc",
       "lookup": "KRTH",
-      "apercu": true,
-      "country": "US"
+      "country": "US",
+      "logo": [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/KRTH_K-EARTH_101_logo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/KRTH-FM_logo.png",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/K-Earth_101_logo.png"
+      ],
+      "site": "https://www.audacy.com/kearth101"
     },
     {
       "id": "wfmu",
@@ -170,8 +230,11 @@
       "short": "WFMU",
       "url": "https://stream0.wfmu.org/freeform-128k",
       "lookup": "WFMU",
-      "apercu": true,
-      "country": "US"
+      "country": "US",
+      "logo": [
+        "https://wfmu.org/images/wfmu_logo_94.gif"
+      ],
+      "site": "https://wfmu.org/"
     },
     {
       "id": "wkcr",
@@ -179,8 +242,12 @@
       "short": "WKCR 89.9",
       "url": "https://wkcr.streamguys1.com/live",
       "lookup": "WKCR",
-      "apercu": true,
-      "country": "US"
+      "country": "US",
+      "logo": [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/WKCR_logo.png",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/WKCR-FM_logo.png"
+      ],
+      "site": "https://www.cc-seas.columbia.edu/wkcr/"
     }
   ],
   "news": [

@@ -25,7 +25,7 @@ jobs:
       - name: Préparer le site
         run: |
           mkdir site
-          cp index.html apercu.html icone.png data.json site/
+          cp index.html icone.png data.json site/
           cp -r fonts site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
@@ -33,6 +33,25 @@ jobs:
           path: site
       - id: deploy
         uses: actions/deploy-pages@v4
+      - name: Essais dans un vrai navigateur (après une modification)
+        if: github.event_name == 'push'
+        continue-on-error: true
+        run: |
+          python3 -m pip install --quiet --user --break-system-packages playwright
+          python3 -m playwright install --with-deps webkit > /dev/null 2>&1 || true
+          sleep 20
+          python3 tests/verifier.py --url "https://chevaldeuxtrois-ux.github.io/maison/?v=${GITHUB_SHA}" --out captures --audio --webkit
+      - name: Publier le rapport d'essais
+        if: github.event_name == 'push'
+        continue-on-error: true
+        run: |
+          cd captures
+          git init -q -b captures
+          git config user.name "dashboard-maison"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Rapport d'essais ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" captures
       - name: Garder la planification active
         # GitHub coupe les tâches planifiées d'un dépôt resté 60 jours sans activité.
         run: |

@@ -118,50 +118,71 @@ def build_weather(cfg):
     }
 
 
-def probe(url):
-    """Type de contenu et adresse finale d'un flux (on ne lit que les en-têtes)."""
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        return resp.headers.get("Content-Type", ""), resp.geturl()
+def read_some(url, limit=40000, timeout=20):
+    """Ouvre une adresse et lit ses premiers octets : (type de contenu, adresse finale, octets)."""
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Icy-MetaData": "0"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.headers.get("Content-Type", ""), resp.geturl(), resp.read(limit)
 
 
-def is_audio(ctype):
-    return ctype.lower().startswith("audio/") or "ogg" in ctype.lower() or "mpegurl" in ctype.lower()
+def check_stream(url):
+    """Vérifie qu'un direct envoie réellement du son. Renvoie un court compte rendu, ou lève une erreur."""
+    ctype, final, data = read_some(url)
+    low = ctype.lower()
+    if "mpegurl" in low or url.split("?")[0].endswith(".m3u8"):
+        # Liste HLS : on la suit jusqu'à un premier segment audio.
+        for _ in range(3):
+            lines = [l.strip() for l in data.decode("utf-8", "replace").splitlines() if l.strip() and not l.startswith("#")]
+            if not lines:
+                raise RuntimeError("liste HLS vide")
+            nxt = urllib.parse.urljoin(final, lines[-1])
+            ctype2, final, data = read_some(nxt)
+            if "mpegurl" not in ctype2.lower() and not nxt.split("?")[0].endswith(".m3u8"):
+                if len(data) < 5000:
+                    raise RuntimeError("segment HLS trop court (%d octets)" % len(data))
+                return "HLS, segment %s de %d octets" % (ctype2, len(data)), final
+        raise RuntimeError("liste HLS sans segment")
+    if not (low.startswith("audio/") or "ogg" in low):
+        raise RuntimeError("réponse non audio (%s)" % ctype)
+    if len(data) < 20000:
+        raise RuntimeError("flux trop court (%d octets)" % len(data))
+    return "%s, %d octets lus" % (ctype, len(data)), final
 
 
 def build_station(st, prev):
-    """Adresse du direct : celle des réglages si elle répond, sinon l'annuaire radio-browser.info."""
-    out = {"id": st["id"], "name": st["name"], "short": st.get("short", st["name"]), "url": st.get("url", "")}
-    if not st.get("lookup"):
-        return out
-    if out["url"]:
+    """Adresse du direct : la première qui envoie vraiment du son parmi les réglages, puis l'annuaire radio-browser.info."""
+    out = {"id": st["id"], "name": st["name"], "short": st.get("short", st["name"]), "url": ""}
+    tried = []
+    for url in [st.get("url")] + st.get("alt", []):
+        if not url:
+            continue
         try:
-            out["type"], out["final"] = probe(out["url"])
-            if is_audio(out["type"]):
-                return out
+            out["check"], out["final"] = check_stream(url)
+            out["url"] = url
+            return out
         except Exception as ex:
-            out["type"] = "erreur : %s" % ex
-        log("radio %s : adresse des réglages en échec (%s)" % (st["id"], out["type"]))
+            tried.append("%s -> %s" % (url, ex))
     try:
-        q = urllib.parse.urlencode({"name": st["lookup"], "order": "votes", "reverse": "true",
-                                    "hidebroken": "true", "limit": 8})
+        q = urllib.parse.urlencode({"name": st.get("lookup") or st["name"], "order": "votes", "reverse": "true",
+                                    "hidebroken": "true", "limit": 10})
         found = json.loads(fetch("https://all.api.radio-browser.info/json/stations/search?" + q).decode("utf-8"))
         for r in found:
             url = r.get("url_resolved") or r.get("url") or ""
-            if not url.startswith("http") or ".m3u8" in url:
+            if not url.startswith("https://") or (st.get("country") and r.get("countrycode") != st["country"]):
                 continue
             try:
-                ctype, final = probe(url)
-            except Exception:
-                continue
-            if is_audio(ctype):
-                out.update({"url": url, "found": r.get("name", ""), "type": ctype, "final": final})
+                out["check"], out["final"] = check_stream(url)
+                out["url"], out["found"] = url, r.get("name", "")
                 return out
-        raise RuntimeError("aucun flux audio pour " + st["lookup"])
+            except Exception as ex:
+                tried.append("%s -> %s" % (url, ex))
     except Exception as ex:
-        log("radio %s : %s" % (st["id"], ex))
-        if prev and prev.get("url") and not st.get("url"):
-            out["url"], out["found"] = prev["url"], prev.get("found", "")
+        tried.append("annuaire -> %s" % ex)
+    log("radio %s : aucun flux valide. %s" % (st["id"], " ; ".join(tried)[:900]))
+    if prev and prev.get("url"):          # panne passagère : on garde l'adresse connue
+        out["url"], out["check"] = prev["url"], "non vérifié ce tour-ci"
+    elif st.get("url"):
+        out["url"], out["check"] = st["url"], "ÉCHEC du contrôle"
     return out
 
 
@@ -173,31 +194,51 @@ def plain(text):
 
 
 def image_info(url):
-    """(type, taille) si l'adresse répond bien par une image, sinon None."""
+    """(adresse finale, type, taille) si l'adresse répond bien par une image, sinon None."""
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": UA})
-        with urllib.request.urlopen(req, timeout=12) as resp:
-            ctype = resp.headers.get("Content-Type", "")
-            size = len(resp.read(600000))
+        ctype, final, data = read_some(url, 600000, 12)
     except Exception:
         return None
-    if ctype.lower().startswith("image/") and "icon" not in ctype.lower() and size >= 1200:
-        return ctype, size
+    low = ctype.lower()
+    if low.startswith("image/") and "icon" not in low and len(data) >= 1200 and final.startswith("https://"):
+        return final, ctype, len(data)
     return None
+
+
+def site_icons(site):
+    """Images que le site de la station déclare pour se représenter (icône d'écran d'accueil, image de partage)."""
+    page = fetch(site).decode("utf-8", "replace")[:400000]
+    out = []
+    for pat in (r'<link[^>]+rel=["\'][^"\']*apple-touch-icon[^"\']*["\'][^>]*>',
+                r'<meta[^>]+property=["\']og:image["\'][^>]*>',
+                r'<link[^>]+rel=["\'](?:shortcut )?icon["\'][^>]*>'):
+        for tag in re.findall(pat, page, re.I):
+            m = re.search(r'(?:href|content)=["\']([^"\']+)["\']', tag, re.I)
+            if m and not m.group(1).lower().split("?")[0].endswith(".ico"):
+                out.append(urllib.parse.urljoin(site, html.unescape(m.group(1))))
+    return out
 
 
 def find_logo(st, prev):
     """Adresse du logo officiel de la station. La page affiche l'image depuis cette adresse ; rien n'est copié ici.
 
-    On essaie d'abord les adresses des réglages, puis la fiche de la station (même nom, même pays)
-    dans l'annuaire radio-browser.info. Chaque adresse est vérifiée : elle doit répondre par une image.
+    Ordre : adresses des réglages, puis images déclarées par le site de la station, puis fiche de la station
+    (même nom, même pays) dans l'annuaire radio-browser.info. Chaque adresse doit répondre par une image.
     """
-    if prev and prev.get("logo") and str(prev.get("logo_from", "")).startswith("v2 "):
+    if prev and prev.get("logo") and str(prev.get("logo_from", "")).startswith("v3 "):
         return prev["logo"], prev["logo_from"]
     for url in st.get("logo", []):
         info = image_info(url)
         if info:
-            return url, "v2 réglages (%s, %d octets)" % info
+            return info[0], "v3 réglages (%s, %d octets)" % info[1:]
+    if st.get("site"):
+        try:
+            for url in site_icons(st["site"])[:6]:
+                info = image_info(url)
+                if info:
+                    return info[0], "v3 site %s (%s, %d octets)" % (st["site"], info[1], info[2])
+        except Exception as ex:
+            log("logo %s : site illisible (%s)" % (st["id"], ex))
     wanted = [plain(st.get("lookup", "")), plain(st["name"]), plain(st.get("short", ""))]
     q = urllib.parse.urlencode({"name": st.get("lookup") or st["name"], "order": "votes", "reverse": "true", "limit": 40})
     found = json.loads(fetch("https://all.api.radio-browser.info/json/stations/search?" + q).decode("utf-8"))
@@ -211,7 +252,7 @@ def find_logo(st, prev):
         seen.add(url)
         info = image_info(url)
         if info:
-            return url, "v2 annuaire : %s (%s, %d octets)" % (r.get("name", ""), info[0], info[1])
+            return info[0], "v3 annuaire : %s (%s, %d octets)" % (r.get("name", ""), info[1], info[2])
     return "", "aucun logo vérifié"
 
 
@@ -285,8 +326,8 @@ def main():
     with ThreadPoolExecutor(max_workers=4) as pool:
         podcasts = list(pool.map(lambda p: build_podcast(p, prev_pods.get(p["id"])), cfg["podcasts"]))
 
-    prev_st = {s["id"]: s for s in prev.get("stations", []) + prev.get("stations_apercu", [])}
-    built = []
+    prev_st = {s["id"]: s for s in prev.get("stations", [])}
+    stations = []
     for st in cfg["stations"]:
         s = build_station(st, prev_st.get(st["id"]))
         try:
@@ -294,19 +335,14 @@ def main():
         except Exception as ex:
             s["logo"], s["logo_from"] = "", "erreur : %s" % ex
         log("bilan logo %s | %s | %s" % (st["id"], s["logo"], s["logo_from"]))
-        s["_apercu"], s["_retire"] = bool(st.get("apercu")), bool(st.get("retire"))
-        built.append(s)
-    strip = lambda s: {k: v for k, v in s.items() if not k.startswith("_")}
-    stations = [strip(s) for s in built if s["url"] and not s["_apercu"]]
-    stations_apercu = [strip(s) for s in built if s["url"] and not s["_retire"]]
+        log("bilan radio %s | %s | %s | %s" % (st["id"], s["url"], s.get("check"), (s.get("final") or "")[:90]))
+        if s["url"]:
+            stations.append(s)
 
-    data = {"updated": int(time.time()), "stations": stations, "stations_apercu": stations_apercu, "spotify": cfg.get("spotify_client_id", ""), "weather": weather,
+    data = {"updated": int(time.time()), "stations": stations, "spotify": cfg.get("spotify_client_id", ""), "weather": weather,
             "news": news, "podcasts": podcasts}
     with open(os.path.join(BASE, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-    for s in stations_apercu:
-        if s.get("type"):
-            log("bilan radio %s | %s | %s | %s | %s" % (s["id"], s["url"], s.get("found"), s.get("type"), s.get("final")))
     for p in podcasts:
         e = p["episodes"][0] if p["episodes"] else None
         log("bilan podcast %s | %s | %d | %s | %s | %s" % (

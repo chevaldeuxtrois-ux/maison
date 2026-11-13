@@ -3,13 +3,20 @@
 <head>
 <meta charset="utf-8">
 <title>Maison</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Maison">
 <link rel="apple-touch-icon" href="icone.png">
 <style>
-/* Cartes mates sur fond anthracite. Écrit pour Safari iOS 12 : pas de flex-gap, clamp(), inset, ni JS moderne. */
+/*
+  Trois dispositions, choisies par le script selon la taille et l'orientation de l'écran :
+  - m-grid  : grand écran (iPad paysage, ordinateur). Vue d'ensemble en trois colonnes ; toucher un titre
+              déploie la section en grand, les autres se rangent dans une colonne de raccourcis.
+  - m-rail  : téléphone à l'horizontale. Toujours une colonne de raccourcis + une section ouverte.
+  - m-stack : téléphone à la verticale. Sections empilées qui se déplient une à la fois.
+  Écrit pour fonctionner aussi sur Safari iOS 12 : pas de gap en flexbox, ni min()/max()/clamp(), ni JS moderne.
+*/
 @font-face { font-family: "Montserrat"; font-weight: 300; src: url(fonts/montserrat-latin-300-normal.woff2) format("woff2"), url(fonts/montserrat-latin-300-normal.woff) format("woff"); }
 @font-face { font-family: "Montserrat"; font-weight: 400; src: url(fonts/montserrat-latin-400-normal.woff2) format("woff2"), url(fonts/montserrat-latin-400-normal.woff) format("woff"); }
 @font-face { font-family: "Montserrat"; font-weight: 500; src: url(fonts/montserrat-latin-500-normal.woff2) format("woff2"), url(fonts/montserrat-latin-500-normal.woff) format("woff"); }
@@ -21,59 +28,111 @@ body {
   background: #262626; color: #0c0c0c;
   font-family: "Montserrat", "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px; line-height: 1.25;
-  overflow: hidden; -webkit-user-select: none; user-select: none;
+  -webkit-user-select: none; user-select: none;
   -webkit-text-size-adjust: 100%; -webkit-font-smoothing: antialiased;
+  display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column;
+  overflow: hidden;
 }
-button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-align: left; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-align: left; touch-action: manipulation; }
 a { color: inherit; text-decoration: none; }
+svg { display: block; width: 100%; height: 100%; }
 
-#app {
-  height: 100%; padding: 12px;
-  display: grid;
-  grid-template-columns: 268px minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto;
-  grid-gap: 10px;
-}
-.col { display: grid; grid-template-columns: minmax(0, 1fr); grid-gap: 10px; min-height: 0; min-width: 0; }
-#col-left { grid-template-rows: auto auto minmax(0, 1fr); }
-#col-mid { grid-template-rows: auto minmax(0, 1fr); }
-#col-right { grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+/* ---------- Structure ---------- */
+#view { -webkit-flex: 1 1 0; flex: 1 1 0; min-height: 0; padding: 10px; padding-left: calc(10px + env(safe-area-inset-left)); padding-right: calc(10px + env(safe-area-inset-right));
+  display: -webkit-flex; display: flex; }
+#cols, #rail, #main, #stack { display: none; min-width: 0; min-height: 0; }
+.col { -webkit-flex: 1 1 0; flex: 1 1 0; min-width: 0; min-height: 0; margin-left: 10px;
+  display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#c1 { -webkit-flex: 0 0 268px; flex: 0 0 268px; margin-left: 0; }
 
-.card { border-radius: 8px; min-height: 0; min-width: 0; overflow: hidden;
+.sec { border-radius: 8px; overflow: hidden; min-width: 0; min-height: 0; -webkit-flex: 0 0 auto; flex: 0 0 auto;
   display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+.sec + .sec { margin-top: 10px; }
 .orange { background: #f5821f; }
 .stone { background: #b7b7b1; }
 .paper { background: #dededa; }
 .sage { background: #7f8a70; }
 .brown { background: #80574a; }
 .sand { background: #c3b083; }
-.head { padding: 12px 14px 9px; -webkit-flex: none; flex: none;
-  display: -webkit-flex; display: flex; -webkit-align-items: flex-start; align-items: flex-start; }
-.h { font-size: 17px; font-weight: 700; line-height: 1.08; letter-spacing: -0.01em; min-width: 0; -webkit-flex: 1 1 0; flex: 1 1 0; }
-.h span { display: block; opacity: 0.45; }
-.ic { -webkit-flex: none; flex: none; width: 24px; height: 24px; margin-left: 8px; }
-.ic svg { width: 100%; height: 100%; display: block; }
-.scroll { -webkit-flex: 1 1 0; flex: 1 1 0; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.slate { background: #555555; color: #e9e9e4; }
 
-/* Horloge */
-#clock-card { padding: 8px 12px 12px; }
-#clock { white-space: nowrap; text-align: right; font-size: 72px; font-weight: 300; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
-#clock .sec { font-size: 18px; font-weight: 400; letter-spacing: 0; opacity: 0.55; margin-left: 4px; }
-#date { margin: 14px 2px 10px; font-size: 19px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; }
+.sec-head { -webkit-flex: none; flex: none; width: 100%; min-height: 52px; padding: 8px 12px 8px 14px;
+  display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
+.sec-head:active { background: rgba(12, 12, 12, 0.1); }
+.sec-head .ic { -webkit-flex: none; flex: none; width: 24px; height: 24px; margin-right: 12px; }
+.st { -webkit-flex: 1 1 0; flex: 1 1 0; min-width: 0; }
+.tt { display: block; font-size: 17px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sm { display: block; font-style: normal; font-size: 12px; font-weight: 500; opacity: 0.6; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.go { -webkit-flex: none; flex: none; width: 32px; height: 32px; margin-left: 8px; padding: 7px; border-radius: 6px; background: rgba(12, 12, 12, 0.12); }
+.go .x { display: none; }
+.sec-body { min-height: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-flex: 0 0 auto; flex: 0 0 auto; }
+.scroll { min-height: 0; }
+/* Une section « fill » remplit la place qu'on lui donne et fait défiler son contenu. */
+.sec.fill { -webkit-flex: 1 1 0; flex: 1 1 0; }
+.sec.fill .sec-body { -webkit-flex: 1 1 0; flex: 1 1 0; }
+.sec.fill .scroll { -webkit-flex: 1 1 0; flex: 1 1 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.sec.mini .sec-body { display: none; }
+
+/* ---------- Grand écran : vue d'ensemble ---------- */
+.m-grid.overview #cols { display: -webkit-flex; display: flex; -webkit-flex: 1 1 0; flex: 1 1 0; }
+.m-grid.overview #s-clock .sec-head { display: none; }
+
+/* ---------- Section déployée + colonne de raccourcis (grand écran et téléphone horizontal) ---------- */
+.focus #rail { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-flex: 0 0 250px; flex: 0 0 250px;
+  overflow-y: auto; -webkit-overflow-scrolling: touch; margin-right: 10px; }
+.focus #main { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-flex: 1 1 0; flex: 1 1 0; }
+#rail .sec + .sec { margin-top: 6px; }
+#rail .sec-head { min-height: 50px; padding-top: 6px; padding-bottom: 6px; }
+#rail .go { display: none; }
+#main .go .o { display: none; }
+#main .go .x { display: block; }
+#main .sec-head { min-height: 60px; }
+#main .tt { font-size: 22px; }
+#main .sm { font-size: 13px; }
+.m-rail #rail { -webkit-flex-basis: 200px; flex-basis: 200px; }
+.m-rail #rail .sec-head { min-height: 46px; }
+.m-rail #main .sec-head { min-height: 48px; }
+.m-rail #main .tt { font-size: 18px; }
+.m-rail #main .go { display: none; }
+
+/* ---------- Téléphone vertical : sections empilées qui se déplient ---------- */
+.m-stack { overflow: visible; display: block; height: auto; }
+html.m-stack-html { height: auto; }
+.m-stack #view { display: block; padding-bottom: 96px; padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+.m-stack #stack { display: block; }
+.m-stack .sec + .sec { margin-top: 8px; }
+.m-stack .sec-head { min-height: 58px; }
+.m-stack .go { background: none; padding: 6px; -webkit-transition: -webkit-transform 0.15s; transition: transform 0.15s; }
+.m-stack .sec.open .go { -webkit-transform: rotate(90deg); transform: rotate(90deg); }
+.m-stack #s-clock .sec-head { display: none; }
+.m-stack #player { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; margin: 0; border-radius: 0; padding-bottom: 7px; padding-bottom: calc(7px + env(safe-area-inset-bottom)); }
+
+/* ---------- Horloge ---------- */
+#clock-body { padding: 8px 12px 12px; }
+#clock { display: block; width: 100%; white-space: nowrap; text-align: right; font-size: 72px; font-weight: 300; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+#clock .sec2 { font-size: 18px; font-weight: 400; letter-spacing: 0; opacity: 0.55; margin-left: 4px; }
+#date { margin: 12px 2px 10px; font-size: 19px; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; }
 #date:before { content: ""; display: inline-block; width: 13px; height: 13px; border-radius: 50%; background: #0c0c0c; margin-right: 7px; }
 #date span { display: block; color: #b25c10; }
-#chrono { margin-top: 2px; display: -webkit-flex; display: flex; }
-#ch-main { -webkit-flex: 1 1 0; flex: 1 1 0; min-width: 0; height: 40px; border-radius: 6px; background: #d87118; padding: 0 10px;
+#chrono { display: -webkit-flex; display: flex; }
+#ch-main { -webkit-flex: 1 1 0; flex: 1 1 0; min-width: 0; height: 44px; border-radius: 6px; background: #d87118; padding: 0 10px;
   display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
-#ch-main .ic { margin: 0 8px 0 0; width: 20px; height: 20px; }
+#ch-main .ic { -webkit-flex: none; flex: none; margin: 0 8px 0 0; width: 20px; height: 20px; }
 #ch-time { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 #ch-state { margin-left: auto; font-size: 11px; font-weight: 700; opacity: 0.7; }
 #ch-main.run { background: #0c0c0c; color: #f5821f; }
-#ch-reset { -webkit-flex: none; flex: none; width: 40px; height: 40px; margin-left: 5px; border-radius: 6px; background: #d87118; text-align: center; font-size: 20px; font-weight: 700; }
+#ch-reset { -webkit-flex: none; flex: none; width: 44px; height: 44px; margin-left: 5px; border-radius: 6px; background: #d87118; text-align: center; font-size: 20px; font-weight: 700; }
 #ch-main:active, #ch-reset:active { opacity: 0.75; }
+#main #clock { text-align: center; font-size: 150px; }
+#main #clock .sec2 { font-size: 34px; }
+#main #date { font-size: 28px; text-align: center; margin: 20px 0; }
+#main #date:before { display: none; }
+#main #chrono { max-width: 420px; width: 100%; margin: 0 auto; }
+.m-rail #main #clock { font-size: 84px; }
+.m-rail #main #date { font-size: 20px; margin: 8px 0 10px; }
 
-/* Météo */
-#wx-now { padding: 0 14px 6px; display: -webkit-flex; display: flex; -webkit-align-items: flex-end; align-items: flex-end; }
+/* ---------- Météo ---------- */
+#wx-now { padding: 0 14px 6px; display: -webkit-flex; display: flex; -webkit-align-items: flex-end; align-items: flex-end; -webkit-flex: none; flex: none; }
 #wx-main { min-width: 0; -webkit-flex: 1 1 0; flex: 1 1 0; }
 #wx-text { font-size: 14px; font-weight: 700; }
 #wx-sub { font-size: 11px; opacity: 0.65; margin-top: 2px; }
@@ -86,169 +145,216 @@ a { color: inherit; text-decoration: none; }
 .wcol .track b { position: absolute; left: 0; right: 0; border-radius: 6px; background: #0c0c0c; }
 .wcol .lo { opacity: 0.65; }
 .wcol .wi { width: 20px; height: 20px; margin-top: 3px; }
-.wcol .wi svg { width: 100%; height: 100%; display: block; }
 .wcol .dn { opacity: 0.65; text-transform: capitalize; }
+#main #wx-now { padding: 4px 20px 10px; }
+#main #wx-temp { font-size: 110px; }
+#main #wx-text { font-size: 22px; }
+#main #wx-sub { font-size: 14px; }
+#main #wx-days { -webkit-flex: 1 1 0; flex: 1 1 0; height: auto; min-height: 150px; max-height: 340px; padding: 14px 20px 20px; }
+#main .wcol { font-size: 14px; }
+#main .wcol .hi { font-size: 16px; }
+#main .wcol .track { width: 46px; }
+#main .wcol .wi { width: 30px; height: 30px; }
+.m-rail #main #wx-temp { font-size: 64px; }
+.m-rail #main #wx-days { min-height: 120px; }
+.m-stack #wx-days { height: 160px; }
 
-/* Tuiles (radios, lumières) */
-.tiles { padding: 0 6px 6px; display: grid; grid-gap: 5px; }
-#stations { grid-template-columns: 1fr 1fr 1fr; }
-.tile { display: block; width: 100%; background: #dededa; border-radius: 6px; padding: 11px 8px 12px; text-align: center;
-  font-size: 13px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ---------- Tuiles : radios et lumières ---------- */
+#radio-body, #hue-body { padding: 0 6px 6px; }
+#stations { display: grid; grid-gap: 5px; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+.tile { display: block; width: 100%; background: #dededa; color: #0c0c0c; border-radius: 6px; text-align: center; font-weight: 700; letter-spacing: -0.01em; overflow: hidden; position: relative; }
 .tile:active { background: #f0f0ec; }
-.tile.on { background: #f5821f; }
-#hue { padding: 0 6px 6px; }
-#hue-card .head { padding-bottom: 7px; }
+#stations .tile { height: 48px; padding: 0 4px; font-size: 11px; line-height: 1.1; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; }
+#stations .tile.on { background: #f5821f; }
+#stations .tile.ko { opacity: 0.45; }
+/* Logos officiels, affichés en noir et blanc ; le blanc de leur fond se fond dans la tuile. */
+.logo { display: block; max-width: 84%; max-height: 34px; -webkit-filter: grayscale(1) contrast(1.15); filter: grayscale(1) contrast(1.15); mix-blend-mode: multiply; pointer-events: none; }
+#main #stations, .m-stack #stations { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); grid-gap: 6px; }
+#main #stations .tile, .m-stack #stations .tile { height: 68px; font-size: 13px; }
+#main .logo, .m-stack .logo { max-height: 46px; max-width: 78%; }
+.m-rail #main #stations { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+.m-rail #main #stations .tile { height: 56px; }
+.m-rail #main .logo { max-height: 38px; }
+#radio-tools { display: none; padding: 10px 4px 4px; font-size: 12px; line-height: 1.35; }
+#main #radio-tools, .m-stack #radio-tools { display: block; }
+.btn { display: inline-block; background: #0c0c0c; color: #dededa; border-radius: 6px; padding: 0 14px; min-height: 44px; line-height: 44px; font-size: 13px; font-weight: 700; }
+.btn:active { opacity: 0.8; }
+#radio-result { margin-top: 8px; }
+
 #lamps { display: grid; grid-template-columns: 1fr 1fr; grid-gap: 5px; }
-.lamp { background: #a3a39d; color: #3a3a37; padding: 9px 8px 10px; }
+.lamp { height: 44px; padding: 0 8px; font-size: 13px; white-space: nowrap; text-overflow: ellipsis; background: #a3a39d; color: #3a3a37; }
 .lamp.on { background: #f3f3ef; color: #0c0c0c; }
 .lamp.all { background: #555555; color: #dededa; }
-.hue-msg { padding: 0 8px 8px; font-size: 12px; line-height: 1.3; }
-.hue-msg a { text-decoration: underline; }
-.hue-btn { display: inline-block; background: #0c0c0c; color: #dededa; border-radius: 6px; padding: 9px 13px; font-size: 13px; font-weight: 700; margin-left: 8px; }
-#hue-ip { font: inherit; font-size: 16px; width: 140px; border: 0; border-radius: 6px; background: #dededa; color: #0c0c0c;
-  padding: 8px 10px; margin-left: 8px; -webkit-appearance: none; -webkit-user-select: text; user-select: text; }
+#main #lamps, .m-stack #lamps { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); grid-gap: 6px; }
+#main .lamp, .m-stack .lamp { height: 60px; font-size: 15px; }
+.msg { padding: 0 8px 8px; font-size: 12px; line-height: 1.35; }
+.msg a { text-decoration: underline; }
+#hue-ip { font: inherit; font-size: 16px; width: 150px; height: 44px; border: 0; border-radius: 6px; background: #dededa; color: #0c0c0c;
+  padding: 0 10px; margin: 0 6px 6px 8px; -webkit-appearance: none; -webkit-user-select: text; user-select: text; }
+#hue .btn { margin-left: 8px; }
 
-/* Podcasts */
-.show { display: -webkit-flex; display: flex; -webkit-align-items: stretch; align-items: stretch; border-top: 1px solid rgba(12, 12, 12, 0.35); }
-.show .main { -webkit-flex: 1 1 0; flex: 1 1 0; min-width: 0; padding: 8px 6px 9px 14px; }
+/* ---------- Listes : podcasts, Spotify, actualités ---------- */
+.line { border-top: 1px solid rgba(12, 12, 12, 0.3); }
+.show { display: -webkit-flex; display: flex; -webkit-align-items: stretch; align-items: stretch; }
+.show .main { -webkit-flex: 1 1 0; flex: 1 1 0; min-width: 0; min-height: 52px; padding: 8px 6px 9px 14px; }
 .show .main:active, .show .more:active, .row:active, .news a:active, #back:active { background: rgba(12, 12, 12, 0.12); }
 .show .nm { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .show .nm:before { content: "\25B6\FE0E"; font-size: 9px; margin-right: 8px; vertical-align: 2px; }
 .show .ep { display: block; font-size: 12px; opacity: 0.75; margin-top: 2px; padding-left: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .show .when { -webkit-flex: none; flex: none; padding: 9px 0 0 6px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-.show .more { -webkit-flex: none; flex: none; width: 38px; text-align: center; font-size: 18px; font-weight: 700; }
+.show .more { -webkit-flex: none; flex: none; width: 48px; text-align: center; font-size: 18px; font-weight: 700; }
 .show.on, .row.on { background: #0c0c0c; color: #f5821f; }
 .show.off { opacity: 0.5; }
-#back { display: block; width: 100%; padding: 9px 14px; border-top: 1px solid rgba(12, 12, 12, 0.35); font-weight: 700; -webkit-flex: none; flex: none; }
-.row { display: block; width: 100%; padding: 9px 14px; border-top: 1px solid rgba(12, 12, 12, 0.35); }
+#back { display: block; width: 100%; min-height: 46px; padding: 0 14px; font-weight: 700; -webkit-flex: none; flex: none; }
+.row { display: block; width: 100%; min-height: 48px; padding: 9px 14px; }
 .row .ttl { display: block; font-size: 14px; font-weight: 700; }
 .row .meta { display: block; font-size: 12px; opacity: 0.75; margin-top: 3px; }
 .empty { padding: 10px 14px; opacity: 0.75; font-size: 13px; }
+#main .show .nm, #main .row .ttl { font-size: 16px; }
+#main .show .ep, #main .row .meta { font-size: 13px; }
+#main .show .main { min-height: 60px; padding-top: 11px; padding-bottom: 12px; }
 
-/* Onglets Podcasts / Spotify */
-.tab { font-weight: 700; letter-spacing: -0.01em; opacity: 0.42; margin-right: 16px; }
-.tab.on { opacity: 1; }
-#sp-view { -webkit-flex: 1 1 0; flex: 1 1 0; min-height: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
-#sp-now { -webkit-flex: none; flex: none; padding: 0 14px 10px; }
-#sp-now .empty { padding: 0; }
-.sp-track { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sp-artist { font-size: 12px; opacity: 0.78; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sp-ctl { display: -webkit-flex; display: flex; margin-top: 9px; }
-.sp-ctl button { -webkit-flex: 1 1 0; flex: 1 1 0; height: 42px; border-radius: 6px; background: rgba(12, 12, 12, 0.3); margin-right: 5px; }
-.sp-ctl button:last-child { margin-right: 0; }
-.sp-ctl button:active { opacity: 0.7; }
-.sp-ctl .pp { background: #0c0c0c; color: #f5821f; }
-.sp-ctl svg { width: 20px; height: 20px; display: block; margin: 0 auto; }
-.sp-help { font-size: 12px; line-height: 1.3; opacity: 0.85; margin-top: 10px; }
-.sp-share { margin-top: 10px; font-size: 12px; line-height: 1.3; }
-.sp-share img { display: block; width: 180px; height: 180px; background: #fff; border-radius: 6px; margin-bottom: 8px; }
-.sp-link { margin-top: 6px; word-break: break-all; -webkit-user-select: text; user-select: text; background: rgba(12, 12, 12, 0.25); border-radius: 6px; padding: 8px; }
-#sp-now { max-height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.sp-dev { display: block; width: 100%; margin-top: 8px; font-size: 12px; opacity: 0.85; }
-
-/* Actualités */
 .news a { display: block; padding: 7px 14px 8px; border-top: 1px solid rgba(12, 12, 12, 0.2); }
 .news .tm { display: block; font-size: 10px; font-weight: 700; opacity: 0.5; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
 .news .ttl { display: block; font-size: 13.5px; font-weight: 500; line-height: 1.25; }
+#main .news a, .m-stack .news a { padding: 11px 16px 12px; }
+#main .news .ttl { font-size: 18px; }
+#main .news .tm { font-size: 12px; }
+.m-stack .news .ttl, .m-rail #main .news .ttl { font-size: 15px; }
 
-/* Lecteur */
-#player { grid-column: 1 / 4; background: #555555; color: #e6e6e1; border-radius: 8px; padding: 7px 7px 7px 16px; position: relative; overflow: hidden;
+#sp-now { -webkit-flex: none; flex: none; padding: 0 14px 12px; }
+#sp-now .empty { padding: 0; }
+.sp-track { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-artist { font-size: 13px; opacity: 0.78; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-ctl { display: -webkit-flex; display: flex; margin-top: 10px; }
+.sp-ctl button { -webkit-flex: 1 1 0; flex: 1 1 0; height: 48px; border-radius: 6px; background: rgba(12, 12, 12, 0.35); margin-right: 5px; padding: 14px 0; }
+.sp-ctl button:last-child { margin-right: 0; }
+.sp-ctl button:active { opacity: 0.7; }
+.sp-ctl .pp { background: #0c0c0c; color: #f5821f; }
+.sp-ctl svg { width: 20px; height: 20px; margin: 0 auto; }
+.sp-dev { display: block; width: 100%; min-height: 44px; font-size: 12px; opacity: 0.9; text-decoration: underline; }
+.sp-help { font-size: 12px; line-height: 1.35; opacity: 0.9; margin-top: 10px; }
+.sp-share { margin-top: 6px; font-size: 12px; line-height: 1.35; }
+.sp-share img { display: block; width: 180px; height: 180px; background: #fff; border-radius: 6px; margin-bottom: 8px; }
+.sp-link { margin-top: 6px; word-break: break-all; -webkit-user-select: text; user-select: text; background: rgba(12, 12, 12, 0.3); border-radius: 6px; padding: 8px; }
+.slate .line { border-top-color: rgba(233, 233, 228, 0.18); }
+.slate .btn { background: #f5821f; color: #0c0c0c; }
+
+/* ---------- Lecteur ---------- */
+#player { -webkit-flex: none; flex: none; margin: 0 10px 10px; margin-left: calc(10px + env(safe-area-inset-left)); margin-right: calc(10px + env(safe-area-inset-right));
+  background: #555555; color: #e6e6e1; border-radius: 8px; padding: 7px 7px 7px 16px; position: relative; overflow: hidden;
   display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; }
 #pl-info { min-width: 0; -webkit-flex: 1 1 0; flex: 1 1 0; }
-#pl-kind { font-size: 11px; font-weight: 700; opacity: 0.6; }
+#pl-kind { font-size: 11px; font-weight: 700; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #pl-kind.live { opacity: 1; color: #f5821f; }
 #pl-title { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #pl-time { font-size: 13px; opacity: 0.7; margin: 0 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.ctl { width: 50px; height: 50px; border-radius: 6px; background: #6b6b6b; margin-left: 5px; font-size: 13px; font-weight: 700;
-  text-align: center; -webkit-flex: none; flex: none; }
+.ctl { width: 50px; height: 50px; border-radius: 6px; background: #6b6b6b; margin-left: 5px; font-size: 13px; font-weight: 700; text-align: center; -webkit-flex: none; flex: none; }
 .ctl:active { background: #7a7a7a; }
 .ctl[disabled] { opacity: 0.35; }
-#pl-play { width: 64px; background: #f5821f; color: #0c0c0c; }
-#pl-play svg { width: 22px; height: 22px; display: block; margin: 0 auto; }
-#pl-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; }
-#pl-bar i { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: #3d3d3d; }
+#pl-play { width: 64px; background: #f5821f; color: #0c0c0c; padding: 14px 0; }
+#pl-play svg { width: 22px; height: 22px; margin: 0 auto; }
+#pl-bar { position: absolute; left: 0; right: 0; top: 0; height: 14px; }
+#pl-bar i { position: absolute; left: 0; right: 0; top: 0; height: 4px; background: #3d3d3d; }
 #pl-fill { display: block; height: 100%; width: 0; background: #f5821f; }
-
-@media (orientation: portrait) {
-  body { overflow: auto; }
-  #app { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; padding-bottom: 90px; }
-  #player { grid-column: 1; position: fixed; left: 12px; right: 12px; bottom: 12px; }
-  #col-mid .card, #col-right .card, #hue-card { max-height: 420px; }
-  #col-left, #col-right { grid-template-rows: auto auto auto; }
-}
+.m-stack #pl-title, .m-rail #pl-title { font-size: 15px; }
+.m-stack .ctl[disabled], .m-rail .ctl[disabled] { display: none; }
+.m-stack #pl-time { display: none; }
+.m-rail .ctl { height: 44px; }
+.m-rail #player { margin-bottom: 6px; padding-top: 5px; padding-bottom: 5px; }
+.m-rail #view { padding-top: 6px; padding-bottom: 6px; }
 </style>
 </head>
-<body>
-<div id="app">
+<body class="m-grid overview">
+<div id="view">
+  <div id="cols"><div class="col" id="c1"></div><div class="col" id="c2"></div><div class="col" id="c3"></div></div>
+  <div id="rail"></div>
+  <div id="main"></div>
+  <div id="stack"></div>
 
-  <div class="col" id="col-left">
-    <div class="card orange" id="clock-card">
-      <div id="clock">--:--</div>
-      <div id="date">&nbsp;</div>
-      <div id="chrono">
-        <button id="ch-main" aria-label="Chronomètre : démarrer ou arrêter"><span class="ic" data-ic="timer"></span><span id="ch-time">00:00,0</span><span id="ch-state">Démarrer</span></button>
-        <button id="ch-reset" aria-label="Remettre le chronomètre à zéro">↺</button>
-      </div>
-    </div>
-    <div class="card stone" id="wx-card">
-      <div class="head"><div class="h">Météo<span id="wx-city">&nbsp;</span></div><span class="ic" id="wx-icon"></span></div>
-      <div id="wx-now">
-        <div id="wx-main">
-          <div id="wx-text">Chargement…</div>
-          <div id="wx-sub"></div>
+  <div id="pool" hidden>
+    <div class="sec orange" id="s-clock" data-sec="clock">
+      <button class="sec-head" data-head="clock"><span class="ic" data-ic="clock"></span><span class="st"><b class="tt">Horloge</b><i class="sm" id="sum-clock">&nbsp;</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body" id="clock-body">
+        <button id="clock" data-head="clock" aria-label="Agrandir l'horloge">--:--</button>
+        <div id="date">&nbsp;</div>
+        <div id="chrono">
+          <button id="ch-main" aria-label="Chronomètre : démarrer ou arrêter"><span class="ic" data-ic="timer"></span><span id="ch-time">00:00,0</span><span id="ch-state">Démarrer</span></button>
+          <button id="ch-reset" aria-label="Remettre le chronomètre à zéro">↺</button>
         </div>
-        <div id="wx-temp">--°</div>
       </div>
-      <div id="wx-days"></div>
     </div>
-    <div class="card stone" id="hue-card">
-      <div class="head"><div class="h">Lumières<span>Philips Hue</span></div><span class="ic" data-ic="bulb"></span></div>
-      <div class="scroll" id="hue"></div>
-    </div>
-  </div>
 
-  <div class="col" id="col-mid">
-    <div class="card stone">
-      <div class="head"><div class="h">Radios<span>en direct</span></div><span class="ic" data-ic="radio"></span></div>
-      <div class="tiles" id="stations"></div>
+    <div class="sec stone" id="s-weather" data-sec="weather">
+      <button class="sec-head" data-head="weather"><span class="ic" id="wx-icon"></span><span class="st"><b class="tt">Météo</b><i class="sm" id="sum-weather">Chargement…</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body">
+        <div id="wx-now">
+          <div id="wx-main"><div id="wx-text">&nbsp;</div><div id="wx-sub"></div></div>
+          <div id="wx-temp">--°</div>
+        </div>
+        <div id="wx-days"></div>
+      </div>
     </div>
-    <div class="card brown">
-      <div class="head"><div class="h"><span style="opacity:1"><button class="tab on" id="tab-pod">Podcasts</button><button class="tab" id="tab-sp">Spotify</button></span><span id="pod-note">dernier épisode</span></div><span class="ic" data-ic="mic"></span></div>
-      <button id="back" hidden>← Tous les podcasts</button>
-      <div class="scroll" id="pods"><div class="empty">Chargement…</div></div>
-      <div id="sp-view" hidden>
+
+    <div class="sec stone" id="s-lights" data-sec="lights">
+      <button class="sec-head" data-head="lights"><span class="ic" data-ic="bulb"></span><span class="st"><b class="tt">Lumières</b><i class="sm" id="sum-lights">Philips Hue</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body" id="hue-body"><div class="scroll" id="hue"></div></div>
+    </div>
+
+    <div class="sec stone" id="s-radio" data-sec="radio">
+      <button class="sec-head" data-head="radio"><span class="ic" data-ic="radio"></span><span class="st"><b class="tt">Radios</b><i class="sm" id="sum-radio">en direct</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body" id="radio-body">
+        <div class="scroll">
+          <div id="stations"></div>
+          <div id="radio-tools">
+            <button class="btn" id="radio-test">Tester toutes les radios ici</button>
+            <div id="radio-result"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec brown" id="s-podcasts" data-sec="podcasts">
+      <button class="sec-head" data-head="podcasts"><span class="ic" data-ic="mic"></span><span class="st"><b class="tt">Podcasts</b><i class="sm" id="sum-podcasts">dernier épisode</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body">
+        <button class="line" id="back" hidden>← Toutes les émissions</button>
+        <div class="scroll" id="pods"><div class="empty">Chargement…</div></div>
+      </div>
+    </div>
+
+    <div class="sec slate" id="s-spotify" data-sec="spotify">
+      <button class="sec-head" data-head="spotify"><span class="ic" data-ic="note"></span><span class="st"><b class="tt">Spotify</b><i class="sm" id="sum-spotify">télécommande</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body" id="sp-view">
         <div id="sp-now"></div>
         <div class="scroll" id="sp-lists"></div>
       </div>
     </div>
-  </div>
 
-  <div class="col" id="col-right">
-    <div class="card paper">
-      <div class="head"><div class="h"><span id="news-name-0" style="opacity:1">Le Monde</span><span id="news-note-0">à la une</span></div><span class="ic" data-ic="paper"></span></div>
-      <div class="scroll news" id="news-0"><div class="empty">Chargement…</div></div>
+    <div class="sec paper" id="s-news0" data-sec="news0">
+      <button class="sec-head" data-head="news0"><span class="ic" data-ic="paper"></span><span class="st"><b class="tt" id="news-name-0">Le Monde</b><i class="sm" id="sum-news0">à la une</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body"><div class="scroll news" id="news-0"><div class="empty">Chargement…</div></div></div>
     </div>
-    <div class="card sage">
-      <div class="head"><div class="h"><span id="news-name-1" style="opacity:1">CNN</span><span id="news-note-1">top stories</span></div><span class="ic" data-ic="globe"></span></div>
-      <div class="scroll news" id="news-1"><div class="empty">Chargement…</div></div>
+    <div class="sec sage" id="s-news1" data-sec="news1">
+      <button class="sec-head" data-head="news1"><span class="ic" data-ic="globe"></span><span class="st"><b class="tt" id="news-name-1">CNN</b><i class="sm" id="sum-news1">top stories</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body"><div class="scroll news" id="news-1"><div class="empty">Chargement…</div></div></div>
     </div>
-    <div class="card sand">
-      <div class="head"><div class="h"><span id="news-name-2" style="opacity:1">Le Film français</span><span id="news-note-2">cette semaine</span></div><span class="ic" data-ic="clap"></span></div>
-      <div class="scroll news" id="news-2"><div class="empty">Chargement…</div></div>
+    <div class="sec sand" id="s-news2" data-sec="news2">
+      <button class="sec-head" data-head="news2"><span class="ic" data-ic="clap"></span><span class="st"><b class="tt" id="news-name-2">Le Film français</b><i class="sm" id="sum-news2">cette semaine</i></span><span class="go"><span class="o" data-ic="chev"></span><span class="x" data-ic="close"></span></span></button>
+      <div class="sec-body"><div class="scroll news" id="news-2"><div class="empty">Chargement…</div></div></div>
     </div>
   </div>
+</div>
 
-  <div id="player">
-    <div id="pl-bar" hidden><i><b id="pl-fill"></b></i></div>
-    <div id="pl-info">
-      <div id="pl-kind">Rien en lecture</div>
-      <div id="pl-title">Choisis une radio ou un podcast</div>
-    </div>
-    <div id="pl-time"></div>
-    <button class="ctl" id="pl-back" disabled>−30</button>
-    <button class="ctl" id="pl-play" aria-label="Lecture ou pause"></button>
-    <button class="ctl" id="pl-fwd" disabled>+30</button>
+<div id="player">
+  <div id="pl-bar" hidden><i><b id="pl-fill"></b></i></div>
+  <div id="pl-info">
+    <div id="pl-kind">Rien en lecture</div>
+    <div id="pl-title">Choisis une radio ou un podcast</div>
   </div>
+  <div id="pl-time"></div>
+  <button class="ctl" id="pl-back" disabled>−30</button>
+  <button class="ctl" id="pl-play" aria-label="Lecture ou pause"></button>
+  <button class="ctl" id="pl-fwd" disabled>+30</button>
 </div>
 
 <audio id="au" preload="none"></audio>
@@ -280,6 +386,7 @@ a { color: inherit; text-decoration: none; }
     while (el && el !== stop && !(el.getAttribute && el.getAttribute(attr) != null)) { el = el.parentNode; }
     return el && el !== stop ? el : null;
   }
+  function sum(id, text) { $('sum-' + id).textContent = text; }
 
   var DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
   var DAYS_SHORT = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
@@ -296,11 +403,15 @@ a { color: inherit; text-decoration: none; }
   var PICTOS = {
     radio: S + '<path d="M4 9h16v11H4zM7 9l9-5"/><circle cx="9" cy="14.5" r="2.5"/><path d="M15 13h2M15 16h2"/></svg>',
     mic: S + '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>',
+    note: S + '<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>',
     paper: S + '<path d="M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-2 2M7 9h7M7 12h7M7 15h4"/></svg>',
     globe: S + '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
     clap: S + '<path d="M4 10h16v10H4zM4 10l-.6-3.4 15.8-2.8.6 3.4zM8.2 5.8l2.4 3.2M13.2 4.9l2.4 3.2"/></svg>',
     timer: S + '<circle cx="12" cy="14" r="7"/><path d="M12 14V10M10 3h4M12 3v4M18.5 7.5l-1.4 1.4"/></svg>',
-    bulb: S + '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg>'
+    clock: S + '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+    bulb: S + '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg>',
+    chev: S + '<path d="M9 6l6 6-6 6"/></svg>',
+    close: S + '<path d="M6 6l12 12M18 6L6 18"/></svg>'
   };
   var W = '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">';
   var CLOUD_HI = '<path d="M15 30h20a8 8 0 0 0 1-15.9A11 11 0 0 0 15 16a7 7 0 0 0 0 14z"/>';
@@ -315,12 +426,88 @@ a { color: inherit; text-decoration: none; }
     storm: W + CLOUD_HI + '<path d="M25 33l-5 7h7l-4 6"/></svg>'
   };
 
+  /* ---------- Disposition : vue d'ensemble, section déployée, sections empilées ---------- */
+  var ORDER = ['clock', 'weather', 'radio', 'podcasts', 'spotify', 'lights', 'news0', 'news1', 'news2'];
+  var GRID = { c1: ['clock', 'weather', 'lights'], c2: ['radio', 'podcasts', 'spotify'], c3: ['news0', 'news1', 'news2'] };
+  var GRID_FILL = { lights: 1, podcasts: 1, news0: 1, news1: 1, news2: 1 };   // prennent la place restante de leur colonne
+  var GRID_MINI = { spotify: 1 };                                             // réduites à leur titre dans la vue d'ensemble
+  var LISTS = { podcasts: 1, spotify: 1, news0: 1, news1: 1, news2: 1 };
+  var mode = '', open = recall('open') || '', laid = '';
+  function sec(id) { return $('s-' + id); }
+  function pickMode() {
+    var w = window.innerWidth, h = window.innerHeight;
+    if (w >= 900 && h >= 560) { return 'grid'; }
+    if (w > h && h < 560) { return 'rail'; }
+    return 'stack';
+  }
+  function layout(force) {
+    var m = pickMode(), i, k, el, sig, body = document.body, focus;
+    if (m === 'rail' && !open) { open = 'radio'; }
+    if (open && !sec(open)) { open = m === 'rail' ? 'radio' : ''; }
+    focus = m === 'rail' || (m === 'grid' && !!open);
+    sig = m + '|' + open;
+    if (sig === laid && !force) { sizeStack(); return; }
+    laid = sig; mode = m;
+    body.className = 'm-' + m + (focus ? ' focus' : m === 'grid' ? ' overview' : '');
+    document.documentElement.className = m === 'stack' ? 'm-stack-html' : '';
+    for (i = 0; i < ORDER.length; i++) { el = sec(ORDER[i]); el.className = el.className.replace(/ (fill|mini|open)\b/g, ''); el.style.height = ''; }
+    if (m === 'stack') {
+      for (i = 0; i < ORDER.length; i++) {
+        el = sec(ORDER[i]);
+        el.className += ORDER[i] === 'clock' ? '' : ORDER[i] === open ? ' open' + (LISTS[open] ? ' fill' : '') : ' mini';
+        $('stack').appendChild(el);
+      }
+      sizeStack();
+    } else if (focus) {
+      for (i = 0; i < ORDER.length; i++) {
+        el = sec(ORDER[i]);
+        if (ORDER[i] === open) { el.className += ' fill'; $('main').appendChild(el); }
+        else { el.className += ' mini'; $('rail').appendChild(el); }
+      }
+    } else {
+      for (k in GRID) {
+        if (GRID.hasOwnProperty(k)) {
+          for (i = 0; i < GRID[k].length; i++) {
+            el = sec(GRID[k][i]);
+            el.className += GRID_FILL[GRID[k][i]] ? ' fill' : GRID_MINI[GRID[k][i]] ? ' mini' : '';
+            $(k).appendChild(el);
+          }
+        }
+      }
+    }
+    if (window.afterLayout) { window.afterLayout(); }
+  }
+  // Téléphone vertical : une liste dépliée reçoit une hauteur fixe, proche de celle de l'écran.
+  function sizeStack() {
+    var el = open && LISTS[open] ? sec(open) : null;
+    if (el && mode === 'stack') { el.style.height = Math.max(340, window.innerHeight - 150) + 'px'; }
+  }
+  function setOpen(id) {
+    open = id;
+    store('open', id);
+    layout();
+    if (mode === 'stack' && id) {
+      var top = sec(id).getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - 8;
+      window.scrollTo(0, top);
+    }
+  }
+  $('view').addEventListener('click', function (e) {
+    var t = closest(e.target, this, 'data-head'), id;
+    if (!t) { return; }
+    id = t.getAttribute('data-head');
+    if (mode === 'stack') { if (id !== 'clock') { setOpen(open === id ? '' : id); } }
+    else if (mode === 'rail') { setOpen(id); }
+    else { setOpen(open === id ? '' : id); }       // grand écran : le titre de la section ouverte la referme
+  });
+  window.addEventListener('resize', function () { layout(); });
+  window.addEventListener('orientationchange', function () { window.setTimeout(layout, 250); });
+
   /* ---------- Horloge ---------- */
   function tick() {
-    var n = new Date();
-    $('clock').innerHTML = pad(n.getHours()) + ':' + pad(n.getMinutes()) + '<span class="sec">' + pad(n.getSeconds()) + '</span>';
-    var day = DAYS[n.getDay()];
-    $('date').innerHTML = day.charAt(0).toUpperCase() + day.slice(1) + '<span>' + n.getDate() + (n.getDate() === 1 ? 'er ' : ' ') + MONTHS[n.getMonth()] + '</span>';
+    var n = new Date(), day = DAYS[n.getDay()], full = n.getDate() + (n.getDate() === 1 ? 'er ' : ' ') + MONTHS[n.getMonth()];
+    $('clock').innerHTML = pad(n.getHours()) + ':' + pad(n.getMinutes()) + '<span class="sec2">' + pad(n.getSeconds()) + '</span>';
+    $('date').innerHTML = day.charAt(0).toUpperCase() + day.slice(1) + '<span>' + full + '</span>';
+    sum('clock', pad(n.getHours()) + ':' + pad(n.getMinutes()) + ' · ' + day + ' ' + full);
     // Rechargement discret chaque nuit pour repartir propre, sauf si on écoute quelque chose.
     if (n.getHours() === 4 && n.getMinutes() === 0 && n.getSeconds() === 0 && !wanted) { window.location.reload(); }
   }
@@ -378,15 +565,15 @@ a { color: inherit; text-decoration: none; }
   }
   function paintWeather() {
     var d = data.weather;
-    if (!d || !d.current) { $('wx-text').textContent = 'Météo indisponible'; return; }
+    if (!d || !d.current) { sum('weather', 'indisponible'); return; }
     var n = new Date(), hm = pad(n.getHours()) + ':' + pad(n.getMinutes());
     var today = d.days[0] || {}, isDay = !today.rise || (hm >= today.rise && hm < today.set);
     var c = d.current, w = wx(c.code, isDay), i, html = '', lo = 99, hi = -99;
-    $('wx-city').textContent = d.city || '';
-    $('wx-card').style.background = tempColor(c.temp);
+    sec('weather').style.background = tempColor(c.temp);
     $('wx-icon').innerHTML = ICONS[w[0]];
     $('wx-temp').textContent = Math.round(c.temp) + '°';
     $('wx-text').textContent = w[1];
+    sum('weather', Math.round(c.temp) + '° · ' + w[1] + (d.city ? ' · ' + d.city : ''));
     $('wx-sub').textContent = 'Ressenti ' + Math.round(c.feels) + '° · vent ' + Math.round(c.wind) + ' km/h' +
       (today.pop != null && today.pop >= 20 ? ' · pluie ' + today.pop + ' %' : '');
     for (i = 0; i < d.days.length; i++) { lo = Math.min(lo, d.days[i].tmin); hi = Math.max(hi, d.days[i].tmax); }
@@ -424,29 +611,25 @@ a { color: inherit; text-decoration: none; }
   }
 
   /* ---------- Actualités ---------- */
-  var NEWS_NOTES = ['à la une', 'top stories', 'cette semaine'];
   function paintNews() {
-    var i, j, html, src;
+    var i, j, html, src, late = (new Date().getTime() / 1000 - data.updated) > 3 * 3600;
     for (i = 0; i < 3 && i < data.news.length; i++) {
       src = data.news[i];
       $('news-name-' + i).textContent = src.name;
-      if (!src.items.length) { $('news-' + i).innerHTML = '<div class="empty">Titres indisponibles pour le moment.</div>'; continue; }
+      if (!src.items.length) { $('news-' + i).innerHTML = '<div class="empty">Titres indisponibles pour le moment.</div>'; sum('news' + i, 'indisponible'); continue; }
       html = '';
       for (j = 0; j < src.items.length; j++) {
         html += '<a href="' + esc(src.items[j].link) + '" target="_blank" rel="noopener"><span class="tm">' + ago(src.items[j].ts) +
           '</span><span class="ttl">' + esc(src.items[j].title) + '</span></a>';
       }
       $('news-' + i).innerHTML = html;
+      sum('news' + i, late ? 'données du ' + dayLabel(data.updated) + ' ' + hhmm(new Date(data.updated * 1000)) : src.items[0].title);
     }
-  }
-  function paintFreshness() {
-    var late = data && (new Date().getTime() / 1000 - data.updated) > 3 * 3600;
-    $('news-note-0').textContent = late ? 'données du ' + dayLabel(data.updated) + ' ' + hhmm(new Date(data.updated * 1000)) : NEWS_NOTES[0];
   }
 
   /* ---------- Lecteur ---------- */
   var au = $('au');
-  var retries = 0, retryTimer = null;
+  var retries = 0, retryTimer = null, loaded = '', hls = null, testing = false;
   var PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l14 8-14 8z"/></svg>';
   var PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
 
@@ -456,38 +639,70 @@ a { color: inherit; text-decoration: none; }
     var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
     return (h ? h + ':' + pad(m) : m) + ':' + pad(r);
   }
+  function fireError() {
+    var ev = document.createEvent('Event');
+    ev.initEvent('error', false, false);
+    au.dispatchEvent(ev);
+  }
+  function dropHls() { if (hls) { try { hls.destroy(); } catch (e) {} hls = null; } }
+  function tryPlay() { var p = au.play(); if (p && p['catch']) { p['catch'](function () {}); } }
+  // Charge une adresse et lance la lecture. Les flux HLS (.m3u8) sont lus directement par Safari ;
+  // les autres navigateurs passent par la bibliothèque hls.js, chargée à la demande.
+  function playUrl(url) {
+    dropHls();
+    loaded = url;
+    if (/\.m3u8(\?|$)/.test(url) && !au.canPlayType('application/vnd.apple.mpegurl')) {
+      var go = function () {
+        if (loaded !== url) { return; }
+        if (!window.Hls || !window.Hls.isSupported()) { fireError(); return; }
+        hls = new window.Hls();
+        hls.on(window.Hls.Events.ERROR, function (e, d) { if (d && d.fatal) { fireError(); } });
+        hls.loadSource(url);
+        hls.attachMedia(au);
+        tryPlay();
+      };
+      if (window.Hls) { go(); return; }
+      var sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js';
+      sc.onload = go;
+      sc.onerror = function () { if (loaded === url) { fireError(); } };
+      document.head.appendChild(sc);
+      return;
+    }
+    au.setAttribute('src', url);
+    au.load();
+    tryPlay();
+  }
+  function unload() { dropHls(); loaded = ''; au.removeAttribute('src'); au.load(); }
   function paintPlayer() {
     var isPod = !!current && current.kind === 'pod';
     $('pl-play').innerHTML = wanted ? PAUSE : PLAY;
     $('pl-back').disabled = !isPod;
     $('pl-fwd').disabled = !isPod;
     $('pl-bar').hidden = !isPod;
-    if (!current) { return; }
-    $('pl-kind').className = current.kind === 'live' && wanted ? 'live' : '';
-    $('pl-kind').textContent = current.kind === 'live' ? (wanted ? '● En direct' : 'En pause') : current.sub;
-    $('pl-title').textContent = current.title;
-    if (!isPod) { $('pl-time').textContent = ''; }
+    if (current) {
+      $('pl-kind').className = current.kind === 'live' && wanted ? 'live' : '';
+      $('pl-kind').textContent = current.kind === 'live' ? (wanted ? '● En direct' : 'En pause') : current.sub;
+      $('pl-title').textContent = current.title;
+      if (!isPod) { $('pl-time').textContent = ''; }
+    }
     paintStations();
     paintPods();
   }
   function start() {
-    if (!current) { return; }
+    if (!current || testing) { return; }
     if (SP.tok && SP.state && SP.state.is_playing) { SP.state.is_playing = false; sp('PUT', '/me/player/pause', null, function () {}); }
     wanted = true;
     window.clearTimeout(retryTimer);
-    if (current.kind === 'live' || au.getAttribute('src') !== current.url) {
-      au.setAttribute('src', current.url);   // un direct se recharge à chaque fois : on repart du présent
-      au.load();
-    }
-    var p = au.play();
-    if (p && p['catch']) { p['catch'](function () {}); }
+    // Un direct se recharge à chaque fois pour repartir du présent ; un podcast reprend où il en était.
+    if (current.kind === 'live' || loaded !== current.url) { playUrl(current.url); } else { tryPlay(); }
     paintPlayer();
   }
   function pause() {
     wanted = false;
     window.clearTimeout(retryTimer);
     au.pause();
-    if (current && current.kind === 'live') { au.removeAttribute('src'); au.load(); }
+    if (current && current.kind === 'live') { unload(); }
     paintPlayer();
   }
   function playStation(st) {
@@ -511,18 +726,30 @@ a { color: inherit; text-decoration: none; }
     window.clearTimeout(retryTimer);
     retryTimer = window.setTimeout(start, 4000);
   }
-  au.addEventListener('playing', function () { retries = 0; });
+  au.addEventListener('playing', function () {
+    retries = 0;
+    if (!testing && current && current.kind === 'live' && ko[current.id]) { delete ko[current.id]; store('radio_ko', JSON.stringify(ko)); paintStations(); }
+  });
   au.addEventListener('error', function () {
-    if (!wanted || !current) { return; }
-    if (current.kind === 'live') { $('pl-kind').textContent = 'Reconnexion…'; retry(); }
-    else { $('pl-kind').textContent = 'Lecture impossible'; wanted = false; $('pl-play').innerHTML = PLAY; }
+    if (testing || !wanted || !current) { return; }
+    if (current.kind === 'live') {
+      // Trois échecs de suite : la station n'est pas joignable d'ici (souvent un blocage par pays).
+      if (retries >= 3) {
+        ko[current.id] = true; store('radio_ko', JSON.stringify(ko));
+        wanted = false; unload(); paintPlayer();
+        $('pl-kind').textContent = 'Radio indisponible ici';
+        return;
+      }
+      $('pl-kind').className = ''; $('pl-kind').textContent = 'Connexion…'; retry();
+    } else { wanted = false; paintPlayer(); $('pl-kind').textContent = 'Lecture impossible'; }
   });
   au.addEventListener('ended', function () {
+    if (testing) { return; }
     if (current && current.kind === 'live') { retry(); } else { wanted = false; paintPlayer(); }
   });
   au.addEventListener('pause', function () {
     // Pause venue d'ailleurs (casque, centre de contrôle) : on aligne le bouton.
-    if (wanted && au.paused && !au.ended && current && current.kind === 'pod') { wanted = false; paintPlayer(); }
+    if (!testing && wanted && au.paused && !au.ended && current && current.kind === 'pod') { wanted = false; paintPlayer(); }
   });
   au.addEventListener('timeupdate', function () {
     if (!current || current.kind !== 'pod') { return; }
@@ -552,20 +779,68 @@ a { color: inherit; text-decoration: none; }
   };
 
   /* ---------- Radios ---------- */
+  var badLogo = {}, ko = {};
+  try { ko = JSON.parse(recall('radio_ko') || '{}') || {}; } catch (e) { ko = {}; }
   function paintStations() {
-    var html = '', i, st, on;
+    var html = '', i, st, on, logo, playing = '';
     for (i = 0; i < stations.length; i++) {
       st = stations[i];
       on = current && current.kind === 'live' && current.id === st.id && wanted;
-      html += '<button class="tile' + (on ? ' on' : '') + '" data-i="' + i + '">' + esc(st['short'] || st.name) + '</button>';
+      if (on) { playing = st.name; }
+      logo = st.logo && !badLogo[st.id];
+      html += '<button class="tile' + (on ? ' on' : '') + (ko[st.id] ? ' ko' : '') + '" data-i="' + i + '" aria-label="' + esc(st.name) + '">' +
+        (logo ? '<img class="logo" alt="' + esc(st['short'] || st.name) + '" src="' + esc(st.logo) + '">' : esc(st['short'] || st.name)) + '</button>';
     }
     $('stations').innerHTML = html;
+    sum('radio', playing ? playing + ' · en direct' : stations.length ? stations.length + ' stations en direct' : 'en direct');
   }
+  // Un logo qui ne charge pas laisse la place au nom de la station.
+  $('stations').addEventListener('error', function (e) {
+    var t = closest(e.target, this, 'data-i');
+    if (t && e.target.tagName === 'IMG' && stations[+t.getAttribute('data-i')]) { badLogo[stations[+t.getAttribute('data-i')].id] = true; paintStations(); }
+  }, true);
   $('stations').onclick = function (e) {
     var t = closest(e.target, this, 'data-i');
-    if (!t) { return; }
+    if (!t || testing) { return; }
     var st = stations[+t.getAttribute('data-i')];
     if (current && current.kind === 'live' && current.id === st.id && wanted) { pause(); } else { playStation(st); }
+  };
+  // Essai réel de chaque station depuis cet appareil : on la lance en sourdine et on attend que le son arrive.
+  $('radio-test').onclick = function () {
+    if (testing || !stations.length) { return; }
+    if (wanted) { pause(); }
+    testing = true;
+    au.muted = true;
+    var i = 0, bad = [];
+    function finish() {
+      au.pause(); unload(); au.muted = false; testing = false;
+      store('radio_ko', JSON.stringify(ko));
+      paintStations();
+      $('radio-result').textContent = (stations.length - bad.length) + ' stations sur ' + stations.length + ' fonctionnent ici.' +
+        (bad.length ? ' Indisponibles : ' + bad.join(', ') + '.' : '');
+    }
+    function next() {
+      if (i >= stations.length) { finish(); return; }
+      var st = stations[i], settled = false, timer;
+      $('radio-result').textContent = 'Essai ' + (i + 1) + ' sur ' + stations.length + ' : ' + st.name + '…';
+      function done(ok) {
+        if (settled) { return; }
+        settled = true;
+        window.clearTimeout(timer);
+        au.removeEventListener('timeupdate', good);
+        au.removeEventListener('error', fail);
+        if (ok) { delete ko[st.id]; } else { ko[st.id] = true; bad.push(st.name); }
+        i++;
+        next();
+      }
+      function good() { if (au.currentTime > 0.2) { done(true); } }
+      function fail() { done(false); }
+      au.addEventListener('timeupdate', good);
+      au.addEventListener('error', fail);
+      timer = window.setTimeout(fail, 15000);
+      playUrl(st.url);
+    }
+    next();
   };
 
   /* ---------- Podcasts ---------- */
@@ -575,14 +850,14 @@ a { color: inherit; text-decoration: none; }
   }
   function paintPods() {
     var html = '', i, p, ep, meta, d, pod = openShow ? findPod(openShow) : null;
-    $('back').hidden = !pod || tab !== 'pod';
-    $('pod-note').textContent = tab === 'sp' ? 'télécommande' : pod ? pod.name : 'dernier épisode';
+    $('back').hidden = !pod;
+    sum('podcasts', current && current.kind === 'pod' && wanted ? current.sub + ' · en lecture' : pod ? pod.name : pods.length ? pods.length + ' émissions · dernier épisode' : 'dernier épisode');
     if (pod) {
       for (i = 0; i < pod.episodes.length; i++) {
         ep = pod.episodes[i];
         d = ep.ts ? new Date(ep.ts * 1000) : null;
         meta = (d ? d.getDate() + ' ' + MONTHS[d.getMonth()] : '') + (ep.dur ? (d ? ' · ' : '') + Math.max(1, Math.round(ep.dur / 60)) + ' min' : '');
-        html += '<button class="row' + (current && current.kind === 'pod' && current.id === ep.audio ? ' on' : '') + '" data-ep="' + i + '">' +
+        html += '<button class="row line' + (current && current.kind === 'pod' && current.id === ep.audio ? ' on' : '') + '" data-ep="' + i + '">' +
           '<span class="ttl">' + esc(ep.title) + '</span><span class="meta">' + esc(meta) + '</span></button>';
       }
       $('pods').innerHTML = html;
@@ -592,15 +867,15 @@ a { color: inherit; text-decoration: none; }
       p = pods[i];
       ep = p.episodes[0];
       if (!ep) {
-        html += '<div class="show off"><div class="main"><span class="nm">' + esc(p.name) + '</span><span class="ep">Indisponible pour le moment</span></div></div>';
+        html += '<div class="show line off"><div class="main"><span class="nm">' + esc(p.name) + '</span><span class="ep">Indisponible pour le moment</span></div></div>';
         continue;
       }
-      html += '<div class="show' + (current && current.kind === 'pod' && current.show === p.id ? ' on' : '') + '">' +
+      html += '<div class="show line' + (current && current.kind === 'pod' && current.show === p.id ? ' on' : '') + '">' +
         '<button class="main" data-play="' + i + '"><span class="nm">' + esc(p.name) + '</span><span class="ep">' + esc(ep.title) + '</span></button>' +
         '<span class="when">' + dayLabel(ep.ts) + '</span>' +
-        '<button class="more" data-open="' + i + '" aria-label="Tous les épisodes">→</button></div>';
+        '<button class="more" data-open="' + i + '" aria-label="Tous les épisodes de ' + esc(p.name) + '">→</button></div>';
     }
-    $('pods').innerHTML = html || '<div class="empty">Aucun podcast.</div>';
+    $('pods').innerHTML = html || '<div class="empty">' + (data ? 'Aucun podcast.' : 'Chargement…') + '</div>';
   }
   $('pods').onclick = function (e) {
     var t, pod;
@@ -619,13 +894,13 @@ a { color: inherit; text-decoration: none; }
   $('back').onclick = function () { openShow = null; paintPods(); };
 
   /* ---------- Spotify (télécommande : la musique sort de l'app Spotify) ---------- */
-  var SP = { cid: recall('sp_cid') || '', tok: null, state: null, devices: [], lists: null, note: '', tick: 0 };
-  var tab = recall('tab') === 'sp' ? 'sp' : 'pod';
+  var SP = { cid: recall('sp_cid') || '', tok: null, state: null, devices: [], lists: null, note: '', tick: 0, waiting: null, share: '', qr: '' };
   try { SP.tok = JSON.parse(recall('spotify') || 'null'); } catch (e) { SP.tok = null; }
   var SP_SCOPE = 'user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
   var SP_PREV = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h2.5v14H5zM20 5v14L9 12z"/></svg>';
   var SP_NEXT = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 5H19v14h-2.5zM4 5l11 7-11 7z"/></svg>';
   function spHere() { return window.location.protocol + '//' + window.location.host + window.location.pathname; }
+  function spShown() { return open === 'spotify' && !!sec('spotify').offsetParent; }
   function form(o) {
     var out = [], k;
     for (k in o) { if (o.hasOwnProperty(k)) { out.push(encodeURIComponent(k) + '=' + encodeURIComponent(o[k])); } }
@@ -646,6 +921,7 @@ a { color: inherit; text-decoration: none; }
     for (i = 0; i < ver.length; i++) { bytes[i] = ver.charCodeAt(i); }
     store('sp_verifier', ver);
     store('sp_cid', SP.cid);
+    store('open', 'spotify');
     subtle.digest({ name: 'SHA-256' }, bytes).then(function (hash) {
       window.location.href = 'https://accounts.spotify.com/authorize?' + form({
         client_id: SP.cid, response_type: 'code', redirect_uri: spHere(), scope: SP_SCOPE,
@@ -721,39 +997,41 @@ a { color: inherit; text-decoration: none; }
   }
   function paintSp() {
     var html = '', st = SP.state, dev = spTarget(), item = st && st.item, artists = [], i;
-    if (!SP.cid) { $('sp-now').innerHTML = '<div class="empty">Spotify n\'est pas encore configuré.</div>'; $('sp-lists').innerHTML = ''; return; }
+    if (!SP.cid) { $('sp-now').innerHTML = '<div class="empty">Spotify n\'est pas encore configuré.</div>'; $('sp-lists').innerHTML = ''; sum('spotify', 'télécommande'); return; }
     if (!SP.tok) {
-      $('sp-now').innerHTML = (SP.note ? '<div class="hue-msg"><b>' + esc(SP.note) + '</b></div>' : '') +
-        '<button class="hue-btn" data-sp="login" style="margin-left:0">Connecter Spotify</button>' +
-        '<div class="sp-help">Si la page Spotify ne répond pas sur cet iPad : ouvre cette même adresse sur ton téléphone, connecte Spotify là-bas, ' +
+      $('sp-now').innerHTML = (SP.note ? '<div class="sp-help"><b>' + esc(SP.note) + '</b></div>' : '') +
+        '<button class="btn" data-sp="login">Connecter Spotify</button>' +
+        '<div class="sp-help">Sur un appareil ancien où la page Spotify ne répond pas : connecte Spotify ici depuis ton téléphone, ' +
         'puis touche « Envoyer la connexion à un autre appareil ».</div>';
       $('sp-lists').innerHTML = '';
+      sum('spotify', 'non connecté');
       return;
     }
     if (item) {
       for (i = 0; item.artists && i < item.artists.length; i++) { artists.push(item.artists[i].name); }
       html += '<div class="sp-track">' + esc(item.name) + '</div><div class="sp-artist">' + esc(artists.join(', ') || (item.show && item.show.name) || '') + '</div>';
+      sum('spotify', (st.is_playing ? '' : 'en pause · ') + item.name + (artists.length ? ' · ' + artists[0] : ''));
     } else {
       html += '<div class="sp-track">Rien en lecture</div><div class="sp-artist">Choisis une playlist ci-dessous</div>';
+      sum('spotify', 'connecté · rien en lecture');
     }
     html += '<div class="sp-ctl"><button data-sp="prev" aria-label="Titre précédent">' + SP_PREV + '</button>' +
       '<button class="pp" data-sp="toggle" aria-label="Lecture ou pause">' + (st && st.is_playing ? PAUSE : PLAY) + '</button>' +
       '<button data-sp="next" aria-label="Titre suivant">' + SP_NEXT + '</button></div>' +
       '<button class="sp-dev" data-sp="device">' + (dev ? 'Sortie : ' + esc(dev.name) + (SP.devices.length > 1 ? ' (toucher pour changer)' : '')
-        : 'Aucun appareil : ouvre l\'app Spotify sur l\'iPad et lance un titre.') + '</button>' +
+        : 'Aucun appareil : ouvre l\'app Spotify et lance un titre.') + '</button>' +
       (SP.note ? '<div class="sp-artist"><b>' + esc(SP.note) + '</b></div>' : '') +
       (SP.share ? '<div class="sp-share">' + (SP.qr ? '<img alt="Code à scanner" src="' + SP.qr + '">' : '') +
-        '<div>Sur l\'iPad, ouvre l\'appareil photo et vise ce code, puis touche la bannière qui apparaît. Ou envoie-toi ce lien et ouvre-le dans Safari sur l\'iPad :</div>' +
+        '<div>Sur l\'autre appareil, vise ce code avec l\'appareil photo puis touche la bannière. Ou envoie-toi ce lien et ouvre-le dans Safari :</div>' +
         '<div class="sp-link">' + esc(SP.share) + '</div></div>'
         : '<button class="sp-dev" data-sp="share">Envoyer la connexion à un autre appareil</button>');
     $('sp-now').innerHTML = html;
   }
   function paintSpLists() {
-    var html = '', i, l;
+    var html = '', i;
     if (!SP.tok || !SP.lists) { $('sp-lists').innerHTML = ''; return; }
     for (i = 0; i < SP.lists.length; i++) {
-      l = SP.lists[i];
-      html += '<button class="row" data-list="' + i + '"><span class="ttl">' + esc(l.name) + '</span></button>';
+      html += '<button class="row line" data-list="' + i + '"><span class="ttl">' + esc(SP.lists[i].name) + '</span></button>';
     }
     $('sp-lists').innerHTML = html || '<div class="empty">Aucune playlist dans ce compte.</div>';
   }
@@ -763,16 +1041,20 @@ a { color: inherit; text-decoration: none; }
       if (cb) { cb(); } else { paintSp(); }
     });
   }
+  // Toutes les 5 s quand la section est ouverte, toutes les 30 s sinon (pour le résumé).
   function spPoll() {
-    if (!SP.tok || tab !== 'sp') { return; }
+    if (!SP.tok || !SP.cid) { return; }
+    SP.tick++;
+    if (!spShown() && SP.tick % 6 !== 1) { return; }
     sp('GET', '/me/player', null, function (s, d) {
       if (s === 200) { SP.state = d; } else if (s === 204) { SP.state = null; }
       paintSp();
     });
-    if (SP.tick++ % 6 === 0) { spDevices(); }
+    if (spShown() && SP.tick % 6 === 1) { spDevices(); }
   }
   function spOpen() {
-    if (!SP.tok) { paintSp(); paintSpLists(); return; }
+    paintSp(); paintSpLists();
+    if (!SP.tok || !SP.cid) { return; }
     SP.tick = 0;
     spPoll();
     if (!SP.lists) {
@@ -788,6 +1070,7 @@ a { color: inherit; text-decoration: none; }
   }
   function spDone(s) {
     SP.note = s === 404 ? 'Aucun appareil actif : lance un titre dans l\'app Spotify.' : s === 403 ? 'Commande refusée par Spotify.' : (s >= 400 || s === 0) ? 'Spotify ne répond pas.' : '';
+    SP.tick = 0;
     window.setTimeout(spPoll, 800);
     paintSp();
   }
@@ -835,18 +1118,7 @@ a { color: inherit; text-decoration: none; }
     t = closest(e.target, this, 'data-list');
     if (t && SP.lists) { spPlay({ context_uri: SP.lists[+t.getAttribute('data-list')].uri }); }
   };
-  function setTab(name) {
-    tab = name;
-    store('tab', name);
-    $('tab-pod').className = 'tab' + (name === 'pod' ? ' on' : '');
-    $('tab-sp').className = 'tab' + (name === 'sp' ? ' on' : '');
-    $('pods').hidden = name !== 'pod';
-    $('sp-view').hidden = name !== 'sp';
-    if (data) { paintPods(); } else { $('back').hidden = true; $('pod-note').textContent = name === 'sp' ? 'télécommande' : 'dernier épisode'; }
-    if (name === 'sp') { paintSp(); paintSpLists(); spOpen(); }
-  }
-  $('tab-pod').onclick = function () { setTab('pod'); };
-  $('tab-sp').onclick = function () { setTab('sp'); };
+  window.afterLayout = function () { if (open === 'spotify') { spOpen(); } };
   // Connexion reçue d'un autre appareil : #sp=… dans l'adresse.
   (function () {
     var m = /^#sp=(.+)$/.exec(window.location.hash);
@@ -854,19 +1126,20 @@ a { color: inherit; text-decoration: none; }
     try { window.history.replaceState(null, '', window.location.pathname); } catch (e) { window.location.hash = ''; }
     SP.tok = { access: '', refresh: decodeURIComponent(m[1]), exp: 0 };
     store('spotify', JSON.stringify(SP.tok));
-    tab = 'sp';
+    open = 'spotify';
   }());
   // Retour de la page d'autorisation Spotify : ?code=… dans l'adresse.
   (function () {
     var m = /[?&]code=([^&]+)/.exec(window.location.search), denied = /[?&]error=/.test(window.location.search);
     if (!m && !denied) { return; }
     try { window.history.replaceState(null, '', window.location.pathname); } catch (e) {}
-    tab = 'sp';
+    open = 'spotify';
     if (!m) { SP.note = 'Autorisation refusée.'; return; }
     spToken({ grant_type: 'authorization_code', code: decodeURIComponent(m[1]), redirect_uri: spHere(),
       client_id: SP.cid, code_verifier: recall('sp_verifier') || '' }, function (ok) {
       SP.note = ok ? '' : 'La connexion à Spotify a échoué. Réessaie.';
-      setTab('sp');
+      setOpen('spotify');
+      spOpen();
     });
   }());
 
@@ -890,32 +1163,35 @@ a { color: inherit; text-decoration: none; }
   var HUE_SCHEME = window.location.protocol === 'https:' ? 'https://' : 'http://';
   function hueUrl(path) { return HUE_SCHEME + hue.ip + '/api/' + hue.user + path; }
   function paintHue() {
-    var html = '', i;
+    var html = '', i, lit = 0;
     if (!hue) {
       if (hueStep === 'idle') {
-        html = '<button class="hue-btn" data-hue="find">Connecter le pont Hue</button>';
+        html = '<button class="btn" data-hue="find">Connecter le pont Hue</button>';
       } else if (hueStep === 'find') {
-        html = '<div class="hue-msg">Recherche du pont…</div>';
+        html = '<div class="msg">Recherche du pont…</div>';
       } else if (hueStep === 'ip') {
-        html = '<div class="hue-msg">Pont introuvable. Tape son adresse IP (app Hue, Réglages, Mon pont) :</div>' +
+        html = '<div class="msg">Pont introuvable. Tape son adresse IP (app Hue, Réglages, Mon pont) :</div>' +
           '<input id="hue-ip" type="text" inputmode="decimal" placeholder="192.168.1.20" autocomplete="off" autocorrect="off">' +
-          '<button class="hue-btn" data-hue="ip">OK</button>';
+          '<button class="btn" data-hue="ip">OK</button>';
       } else {
-        html = (HUE_SCHEME === 'https://' ? '<div class="hue-msg">1. Touche <a href="https://' + esc(hueIp) + '/api/config" target="_blank" rel="noopener">ce lien</a>, ' +
+        html = (HUE_SCHEME === 'https://' ? '<div class="msg">1. Touche <a href="https://' + esc(hueIp) + '/api/config" target="_blank" rel="noopener">ce lien</a>, ' +
           'puis « Afficher les détails » et « consulter ce site web ». Reviens ici.</div>' : '') +
-          '<div class="hue-msg">' + (HUE_SCHEME === 'https://' ? '2. ' : '') + 'Appuie sur le bouton rond du pont Hue, puis touche Continuer.</div>' +
-          '<button class="hue-btn" data-hue="pair">Continuer</button>';
+          '<div class="msg">' + (HUE_SCHEME === 'https://' ? '2. ' : '') + 'Appuie sur le bouton rond du pont Hue, puis touche Continuer.</div>' +
+          '<button class="btn" data-hue="pair">Continuer</button>';
       }
-      if (hueNote) { html = '<div class="hue-msg"><b>' + esc(hueNote) + '</b></div>' + html; }
+      if (hueNote) { html = '<div class="msg"><b>' + esc(hueNote) + '</b></div>' + html; }
       $('hue').innerHTML = html;
+      sum('lights', 'Philips Hue · non connecté');
       return;
     }
-    if (!lamps.length) { $('hue').innerHTML = '<div class="hue-msg">' + esc(hueNote || 'Chargement…') + '</div>'; return; }
+    if (!lamps.length) { $('hue').innerHTML = '<div class="msg">' + esc(hueNote || 'Chargement…') + '</div>'; sum('lights', hueNote || 'Philips Hue'); return; }
     html = '<div id="lamps">';
     for (i = 0; i < lamps.length; i++) {
+      if (lamps[i].on) { lit++; }
       html += '<button class="tile lamp' + (lamps[i].on ? ' on' : '') + '" data-lamp="' + i + '">' + esc(lamps[i].name) + '</button>';
     }
     $('hue').innerHTML = html + '<button class="tile lamp all" data-lamp="all">Tout éteindre</button></div>';
+    sum('lights', lit ? lit + (lit > 1 ? ' pièces allumées' : ' pièce allumée') : 'tout est éteint');
   }
   function loadLamps() {
     if (!hue) { return; }
@@ -991,16 +1267,15 @@ a { color: inherit; text-decoration: none; }
         if (!data) { window.setTimeout(load, 15000); }
         return;
       }
-      if (data && data.updated === d.updated) { paintFreshness(); return; }
+      if (data && data.updated === d.updated) { return; }
       data = d;
-      if (d.spotify && d.spotify !== SP.cid) { SP.cid = d.spotify; store('sp_cid', SP.cid); if (tab === 'sp') { paintSp(); spOpen(); } }
+      if (d.spotify && d.spotify !== SP.cid) { SP.cid = d.spotify; store('sp_cid', SP.cid); if (open === 'spotify') { spOpen(); } else { paintSp(); } }
       stations = d.stations || [];
       pods = d.podcasts || [];
       paintStations();
       paintPods();
       paintWeather();
       paintNews();
-      paintFreshness();
     });
   }
 
@@ -1015,12 +1290,13 @@ a { color: inherit; text-decoration: none; }
   $('pl-play').innerHTML = PLAY;
   chronoSync();
   tick();
+  paintSp();
+  paintHue();
+  layout(true);
   window.setInterval(tick, 1000);
   load();
-  setTab(tab);
-  window.setInterval(spPoll, 5000);
-  paintHue();
   loadLamps();
+  window.setInterval(spPoll, 5000);
   window.setInterval(loadLamps, 20 * 1000);
   window.setInterval(load, 5 * 60 * 1000);
   window.setInterval(function () { if (data) { paintNews(); } }, 60 * 1000);
