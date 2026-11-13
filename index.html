@@ -113,7 +113,7 @@ a { color: inherit; text-decoration: none; }
 .show .main { -webkit-flex: 1 1 0; flex: 1 1 0; min-width: 0; padding: 8px 6px 9px 14px; }
 .show .main:active, .show .more:active, .row:active, .news a:active, #back:active { background: rgba(12, 12, 12, 0.12); }
 .show .nm { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.show .nm:before { content: "▶"; font-size: 9px; margin-right: 8px; vertical-align: 2px; }
+.show .nm:before { content: "\25B6\FE0E"; font-size: 9px; margin-right: 8px; vertical-align: 2px; }
 .show .ep { display: block; font-size: 12px; opacity: 0.75; margin-top: 2px; padding-left: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .show .when { -webkit-flex: none; flex: none; padding: 9px 0 0 6px; font-size: 12px; font-weight: 700; white-space: nowrap; }
 .show .more { -webkit-flex: none; flex: none; width: 38px; text-align: center; font-size: 18px; font-weight: 700; }
@@ -124,6 +124,22 @@ a { color: inherit; text-decoration: none; }
 .row .ttl { display: block; font-size: 14px; font-weight: 700; }
 .row .meta { display: block; font-size: 12px; opacity: 0.75; margin-top: 3px; }
 .empty { padding: 10px 14px; opacity: 0.75; font-size: 13px; }
+
+/* Onglets Podcasts / Spotify */
+.tab { font-weight: 700; letter-spacing: -0.01em; opacity: 0.42; margin-right: 16px; }
+.tab.on { opacity: 1; }
+#sp-view { -webkit-flex: 1 1 0; flex: 1 1 0; min-height: 0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+#sp-now { -webkit-flex: none; flex: none; padding: 0 14px 10px; }
+#sp-now .empty { padding: 0; }
+.sp-track { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-artist { font-size: 12px; opacity: 0.78; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-ctl { display: -webkit-flex; display: flex; margin-top: 9px; }
+.sp-ctl button { -webkit-flex: 1 1 0; flex: 1 1 0; height: 42px; border-radius: 6px; background: rgba(12, 12, 12, 0.3); margin-right: 5px; }
+.sp-ctl button:last-child { margin-right: 0; }
+.sp-ctl button:active { opacity: 0.7; }
+.sp-ctl .pp { background: #0c0c0c; color: #f5821f; }
+.sp-ctl svg { width: 20px; height: 20px; display: block; margin: 0 auto; }
+.sp-dev { display: block; width: 100%; margin-top: 8px; font-size: 12px; opacity: 0.85; }
 
 /* Actualités */
 .news a { display: block; padding: 7px 14px 8px; border-top: 1px solid rgba(12, 12, 12, 0.2); }
@@ -192,9 +208,13 @@ a { color: inherit; text-decoration: none; }
       <div class="tiles" id="stations"></div>
     </div>
     <div class="card brown">
-      <div class="head"><div class="h"><span id="pod-label" style="opacity:1">Podcasts</span><span id="pod-note">dernier épisode</span></div><span class="ic" data-ic="mic"></span></div>
+      <div class="head"><div class="h"><span style="opacity:1"><button class="tab on" id="tab-pod">Podcasts</button><button class="tab" id="tab-sp">Spotify</button></span><span id="pod-note">dernier épisode</span></div><span class="ic" data-ic="mic"></span></div>
       <button id="back" hidden>← Tous les podcasts</button>
       <div class="scroll" id="pods"><div class="empty">Chargement…</div></div>
+      <div id="sp-view" hidden>
+        <div id="sp-now"></div>
+        <div class="scroll" id="sp-lists"></div>
+      </div>
     </div>
   </div>
 
@@ -447,6 +467,7 @@ a { color: inherit; text-decoration: none; }
   }
   function start() {
     if (!current) { return; }
+    if (SP.tok && SP.state && SP.state.is_playing) { SP.state.is_playing = false; sp('PUT', '/me/player/pause', null, function () {}); }
     wanted = true;
     window.clearTimeout(retryTimer);
     if (current.kind === 'live' || au.getAttribute('src') !== current.url) {
@@ -549,9 +570,8 @@ a { color: inherit; text-decoration: none; }
   }
   function paintPods() {
     var html = '', i, p, ep, meta, d, pod = openShow ? findPod(openShow) : null;
-    $('back').hidden = !pod;
-    $('pod-label').textContent = pod ? pod.name : 'Podcasts';
-    $('pod-note').textContent = pod ? 'tous les épisodes' : 'dernier épisode';
+    $('back').hidden = !pod || tab !== 'pod';
+    $('pod-note').textContent = tab === 'sp' ? 'télécommande' : pod ? pod.name : 'dernier épisode';
     if (pod) {
       for (i = 0; i < pod.episodes.length; i++) {
         ep = pod.episodes[i];
@@ -592,6 +612,222 @@ a { color: inherit; text-decoration: none; }
     }
   };
   $('back').onclick = function () { openShow = null; paintPods(); };
+
+  /* ---------- Spotify (télécommande : la musique sort de l'app Spotify) ---------- */
+  var SP = { cid: recall('sp_cid') || '', tok: null, state: null, devices: [], lists: null, note: '', tick: 0 };
+  var tab = recall('tab') === 'sp' ? 'sp' : 'pod';
+  try { SP.tok = JSON.parse(recall('spotify') || 'null'); } catch (e) { SP.tok = null; }
+  var SP_SCOPE = 'user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
+  var SP_PREV = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h2.5v14H5zM20 5v14L9 12z"/></svg>';
+  var SP_NEXT = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 5H19v14h-2.5zM4 5l11 7-11 7z"/></svg>';
+  function spHere() { return window.location.protocol + '//' + window.location.host + window.location.pathname; }
+  function form(o) {
+    var out = [], k;
+    for (k in o) { if (o.hasOwnProperty(k)) { out.push(encodeURIComponent(k) + '=' + encodeURIComponent(o[k])); } }
+    return out.join('&');
+  }
+  function b64url(bytes) {
+    var s = '', i;
+    for (i = 0; i < bytes.length; i++) { s += String.fromCharCode(bytes[i]); }
+    return window.btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function spLogin() {
+    var subtle = window.crypto && (window.crypto.subtle || window.crypto.webkitSubtle);
+    if (!subtle || !window.Uint8Array || !SP.cid) { SP.note = 'Connexion impossible depuis ce navigateur.'; paintSp(); return; }
+    var rnd = new Uint8Array(48), ver, bytes, i;
+    window.crypto.getRandomValues(rnd);
+    ver = b64url(rnd);
+    bytes = new Uint8Array(ver.length);
+    for (i = 0; i < ver.length; i++) { bytes[i] = ver.charCodeAt(i); }
+    store('sp_verifier', ver);
+    store('sp_cid', SP.cid);
+    subtle.digest({ name: 'SHA-256' }, bytes).then(function (hash) {
+      window.location.href = 'https://accounts.spotify.com/authorize?' + form({
+        client_id: SP.cid, response_type: 'code', redirect_uri: spHere(), scope: SP_SCOPE,
+        code_challenge_method: 'S256', code_challenge: b64url(new Uint8Array(hash))
+      });
+    }, function () { SP.note = 'Connexion impossible depuis ce navigateur.'; paintSp(); });
+  }
+  function spToken(params, cb) {
+    var x = new XMLHttpRequest();
+    x.open('POST', 'https://accounts.spotify.com/api/token', true);
+    x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    x.timeout = 15000;
+    x.onreadystatechange = function () {
+      if (x.readyState !== 4) { return; }
+      var d = null;
+      try { d = JSON.parse(x.responseText); } catch (e) { d = null; }
+      if (x.status === 200 && d && d.access_token) {
+        SP.tok = { access: d.access_token, refresh: d.refresh_token || (SP.tok && SP.tok.refresh) || '',
+          exp: new Date().getTime() + ((d.expires_in || 3600) - 60) * 1000 };
+        store('spotify', JSON.stringify(SP.tok));
+        cb(true);
+      } else {
+        if (x.status === 400 || x.status === 401) { SP.tok = null; store('spotify', 'null'); }   // autorisation retirée
+        cb(false);
+      }
+    };
+    x.send(form(params));
+  }
+  function spRefresh(cb) {
+    if (!SP.tok || !SP.tok.refresh) { cb(false); return; }
+    spToken({ grant_type: 'refresh_token', refresh_token: SP.tok.refresh, client_id: SP.cid }, cb);
+  }
+  function sp(method, path, body, cb) {
+    var retried = false;
+    function go() {
+      var x = new XMLHttpRequest();
+      x.open(method, 'https://api.spotify.com/v1' + path, true);
+      x.setRequestHeader('Authorization', 'Bearer ' + SP.tok.access);
+      if (body) { x.setRequestHeader('Content-Type', 'application/json'); }
+      x.timeout = 15000;
+      x.onreadystatechange = function () {
+        if (x.readyState !== 4) { return; }
+        var d = null;
+        if (x.status === 401 && !retried) {
+          retried = true;
+          spRefresh(function (ok) { if (ok) { go(); } else { paintSp(); cb(401, null); } });
+          return;
+        }
+        try { d = JSON.parse(x.responseText); } catch (e) { d = null; }
+        cb(x.status, d);
+      };
+      x.send(body ? JSON.stringify(body) : null);
+    }
+    if (!SP.tok) { cb(0, null); return; }
+    if (new Date().getTime() > SP.tok.exp) { spRefresh(function (ok) { if (ok) { go(); } else { paintSp(); cb(401, null); } }); }
+    else { go(); }
+  }
+  function spTarget() {
+    var i, pick = null;
+    if (SP.state && SP.state.device && SP.state.device.id) { return SP.state.device; }
+    for (i = 0; i < SP.devices.length; i++) {
+      if (SP.devices[i].is_active) { return SP.devices[i]; }
+      if (!pick && SP.devices[i].type === 'Tablet') { pick = SP.devices[i]; }
+    }
+    return pick || SP.devices[0] || null;
+  }
+  function paintSp() {
+    var html = '', st = SP.state, dev = spTarget(), item = st && st.item, artists = [], i;
+    if (!SP.cid) { $('sp-now').innerHTML = '<div class="empty">Spotify n\'est pas encore configuré.</div>'; $('sp-lists').innerHTML = ''; return; }
+    if (!SP.tok) {
+      $('sp-now').innerHTML = (SP.note ? '<div class="hue-msg"><b>' + esc(SP.note) + '</b></div>' : '') +
+        '<button class="hue-btn" data-sp="login" style="margin-left:0">Connecter Spotify</button>';
+      $('sp-lists').innerHTML = '';
+      return;
+    }
+    if (item) {
+      for (i = 0; item.artists && i < item.artists.length; i++) { artists.push(item.artists[i].name); }
+      html += '<div class="sp-track">' + esc(item.name) + '</div><div class="sp-artist">' + esc(artists.join(', ') || (item.show && item.show.name) || '') + '</div>';
+    } else {
+      html += '<div class="sp-track">Rien en lecture</div><div class="sp-artist">Choisis une playlist ci-dessous</div>';
+    }
+    html += '<div class="sp-ctl"><button data-sp="prev" aria-label="Titre précédent">' + SP_PREV + '</button>' +
+      '<button class="pp" data-sp="toggle" aria-label="Lecture ou pause">' + (st && st.is_playing ? PAUSE : PLAY) + '</button>' +
+      '<button data-sp="next" aria-label="Titre suivant">' + SP_NEXT + '</button></div>' +
+      '<button class="sp-dev" data-sp="device">' + (dev ? 'Sortie : ' + esc(dev.name) + (SP.devices.length > 1 ? ' (toucher pour changer)' : '')
+        : 'Aucun appareil : ouvre l\'app Spotify sur l\'iPad et lance un titre.') + '</button>' +
+      (SP.note ? '<div class="sp-artist"><b>' + esc(SP.note) + '</b></div>' : '');
+    $('sp-now').innerHTML = html;
+  }
+  function paintSpLists() {
+    var html = '', i, l;
+    if (!SP.tok || !SP.lists) { $('sp-lists').innerHTML = ''; return; }
+    for (i = 0; i < SP.lists.length; i++) {
+      l = SP.lists[i];
+      html += '<button class="row" data-list="' + i + '"><span class="ttl">' + esc(l.name) + '</span></button>';
+    }
+    $('sp-lists').innerHTML = html || '<div class="empty">Aucune playlist dans ce compte.</div>';
+  }
+  function spDevices(cb) {
+    sp('GET', '/me/player/devices', null, function (s, d) {
+      if (s === 200 && d && d.devices) { SP.devices = d.devices; }
+      if (cb) { cb(); } else { paintSp(); }
+    });
+  }
+  function spPoll() {
+    if (!SP.tok || tab !== 'sp') { return; }
+    sp('GET', '/me/player', null, function (s, d) {
+      if (s === 200) { SP.state = d; } else if (s === 204) { SP.state = null; }
+      paintSp();
+    });
+    if (SP.tick++ % 6 === 0) { spDevices(); }
+  }
+  function spOpen() {
+    if (!SP.tok) { paintSp(); paintSpLists(); return; }
+    SP.tick = 0;
+    spPoll();
+    if (!SP.lists) {
+      sp('GET', '/me/playlists?limit=50', null, function (s, d) {
+        var i, out = [];
+        if (s === 200 && d && d.items) {
+          for (i = 0; i < d.items.length; i++) { if (d.items[i] && d.items[i].uri) { out.push({ name: d.items[i].name, uri: d.items[i].uri }); } }
+          SP.lists = out;
+        }
+        paintSpLists();
+      });
+    }
+  }
+  function spDone(s) {
+    SP.note = s === 404 ? 'Aucun appareil actif : lance un titre dans l\'app Spotify.' : s === 403 ? 'Commande refusée par Spotify.' : (s >= 400 || s === 0) ? 'Spotify ne répond pas.' : '';
+    window.setTimeout(spPoll, 800);
+    paintSp();
+  }
+  function spPlay(body) {
+    var dev = spTarget();
+    if (wanted) { pause(); }       // la radio ou le podcast du dashboard laisse la place
+    sp('PUT', '/me/player/play' + (dev ? '?device_id=' + encodeURIComponent(dev.id) : ''), body, spDone);
+  }
+  $('sp-view').onclick = function (e) {
+    var t = closest(e.target, this, 'data-sp'), act, i, dev, next;
+    if (t) {
+      act = t.getAttribute('data-sp');
+      if (act === 'login') { spLogin(); }
+      else if (act === 'toggle') {
+        if (SP.state && SP.state.is_playing) { SP.state.is_playing = false; sp('PUT', '/me/player/pause', null, spDone); }
+        else { spPlay(null); }
+        paintSp();
+      }
+      else if (act === 'next') { sp('POST', '/me/player/next', null, spDone); }
+      else if (act === 'prev') { sp('POST', '/me/player/previous', null, spDone); }
+      else if (act === 'device') {
+        spDevices(function () {
+          dev = spTarget(); next = null;
+          for (i = 0; i < SP.devices.length; i++) { if (dev && SP.devices[i].id === dev.id) { next = SP.devices[(i + 1) % SP.devices.length]; } }
+          if (next && dev && next.id !== dev.id) { sp('PUT', '/me/player', { device_ids: [next.id], play: true }, spDone); }
+          paintSp();
+        });
+      }
+      return;
+    }
+    t = closest(e.target, this, 'data-list');
+    if (t && SP.lists) { spPlay({ context_uri: SP.lists[+t.getAttribute('data-list')].uri }); }
+  };
+  function setTab(name) {
+    tab = name;
+    store('tab', name);
+    $('tab-pod').className = 'tab' + (name === 'pod' ? ' on' : '');
+    $('tab-sp').className = 'tab' + (name === 'sp' ? ' on' : '');
+    $('pods').hidden = name !== 'pod';
+    $('sp-view').hidden = name !== 'sp';
+    if (data) { paintPods(); } else { $('back').hidden = true; $('pod-note').textContent = name === 'sp' ? 'télécommande' : 'dernier épisode'; }
+    if (name === 'sp') { paintSp(); paintSpLists(); spOpen(); }
+  }
+  $('tab-pod').onclick = function () { setTab('pod'); };
+  $('tab-sp').onclick = function () { setTab('sp'); };
+  // Retour de la page d'autorisation Spotify : ?code=… dans l'adresse.
+  (function () {
+    var m = /[?&]code=([^&]+)/.exec(window.location.search), denied = /[?&]error=/.test(window.location.search);
+    if (!m && !denied) { return; }
+    try { window.history.replaceState(null, '', window.location.pathname); } catch (e) {}
+    tab = 'sp';
+    if (!m) { SP.note = 'Autorisation refusée.'; return; }
+    spToken({ grant_type: 'authorization_code', code: decodeURIComponent(m[1]), redirect_uri: spHere(),
+      client_id: SP.cid, code_verifier: recall('sp_verifier') || '' }, function (ok) {
+      SP.note = ok ? '' : 'La connexion à Spotify a échoué. Réessaie.';
+      setTab('sp');
+    });
+  }());
 
   /* ---------- Lumières (Philips Hue, pont sur le réseau de la maison) ---------- */
   var hue = null, lamps = [], hueStep = 'idle', hueIp = '', hueNote = '';
@@ -716,6 +952,7 @@ a { color: inherit; text-decoration: none; }
       }
       if (data && data.updated === d.updated) { paintFreshness(); return; }
       data = d;
+      if (d.spotify && d.spotify !== SP.cid) { SP.cid = d.spotify; if (tab === 'sp') { paintSp(); } }
       stations = d.stations || [];
       pods = d.podcasts || [];
       paintStations();
@@ -739,6 +976,8 @@ a { color: inherit; text-decoration: none; }
   tick();
   window.setInterval(tick, 1000);
   load();
+  setTab(tab);
+  window.setInterval(spPoll, 5000);
   paintHue();
   loadLamps();
   window.setInterval(loadLamps, 20 * 1000);

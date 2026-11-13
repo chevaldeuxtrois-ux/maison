@@ -238,7 +238,7 @@ def main():
     prev_st = {s["id"]: s for s in prev.get("stations", [])}
     stations = [s for s in (build_station(st, prev_st.get(st["id"])) for st in cfg["stations"]) if s["url"]]
 
-    data = {"updated": int(time.time()), "stations": stations, "weather": weather,
+    data = {"updated": int(time.time()), "stations": stations, "spotify": cfg.get("spotify_client_id", ""), "weather": weather,
             "news": news, "podcasts": podcasts}
     with open(os.path.join(BASE, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
