@@ -172,35 +172,47 @@ def plain(text):
     return re.sub(r"[^a-z0-9]", "", text)
 
 
-def find_logo(st, prev):
-    """Adresse du logo officiel de la station, telle que publiée dans l'annuaire radio-browser.info.
+def image_info(url):
+    """(type, taille) si l'adresse répond bien par une image, sinon None."""
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            ctype = resp.headers.get("Content-Type", "")
+            size = len(resp.read(600000))
+    except Exception:
+        return None
+    if ctype.lower().startswith("image/") and "icon" not in ctype.lower() and size >= 1200:
+        return ctype, size
+    return None
 
-    La page affiche l'image depuis cette adresse ; rien n'est copié ici. On vérifie qu'elle répond bien en image.
+
+def find_logo(st, prev):
+    """Adresse du logo officiel de la station. La page affiche l'image depuis cette adresse ; rien n'est copié ici.
+
+    On essaie d'abord les adresses des réglages, puis la fiche de la station (même nom, même pays)
+    dans l'annuaire radio-browser.info. Chaque adresse est vérifiée : elle doit répondre par une image.
     """
-    if st.get("logo"):
-        return st["logo"], "réglages"
-    if prev and prev.get("logo"):
-        return prev["logo"], prev.get("logo_from", "")
+    if prev and prev.get("logo") and str(prev.get("logo_from", "")).startswith("v2 "):
+        return prev["logo"], prev["logo_from"]
+    for url in st.get("logo", []):
+        info = image_info(url)
+        if info:
+            return url, "v2 réglages (%s, %d octets)" % info
     wanted = [plain(st.get("lookup", "")), plain(st["name"]), plain(st.get("short", ""))]
-    q = urllib.parse.urlencode({"name": st.get("lookup") or st["name"], "order": "votes", "reverse": "true", "limit": 25})
+    q = urllib.parse.urlencode({"name": st.get("lookup") or st["name"], "order": "votes", "reverse": "true", "limit": 40})
     found = json.loads(fetch("https://all.api.radio-browser.info/json/stations/search?" + q).decode("utf-8"))
-    found.sort(key=lambda r: 0 if plain(r.get("name", "")) in wanted else 1)
     seen = set()
-    for r in found[:12]:
-        url = r.get("favicon") or ""
+    for r in found:
+        if plain(r.get("name", "")) not in wanted or (st.get("country") and r.get("countrycode") != st["country"]):
+            continue
+        url = (r.get("favicon") or "").replace("http://", "https://")
         if not url.startswith("https://") or url in seen or url.lower().split("?")[0].endswith(".ico"):
             continue
         seen.add(url)
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=12) as resp:
-                ctype = resp.headers.get("Content-Type", "")
-                size = len(resp.read(600000))
-        except Exception:
-            continue
-        if ctype.lower().startswith("image/") and size >= 2500:
-            return url, "%s (%s, %d octets)" % (r.get("name", ""), ctype, size)
-    return "", "aucun logo exploitable"
+        info = image_info(url)
+        if info:
+            return url, "v2 annuaire : %s (%s, %d octets)" % (r.get("name", ""), info[0], info[1])
+    return "", "aucun logo vérifié"
 
 
 def find_feed(pod):
@@ -292,7 +304,7 @@ def main():
             "news": news, "podcasts": podcasts}
     with open(os.path.join(BASE, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-    for s in stations:
+    for s in stations_apercu:
         if s.get("type"):
             log("bilan radio %s | %s | %s | %s | %s" % (s["id"], s["url"], s.get("found"), s.get("type"), s.get("final")))
     for p in podcasts:
