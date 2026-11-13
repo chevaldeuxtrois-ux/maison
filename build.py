@@ -118,30 +118,49 @@ def build_weather(cfg):
     }
 
 
+def probe(url):
+    """Type de contenu et adresse finale d'un flux (on ne lit que les en-têtes)."""
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        return resp.headers.get("Content-Type", ""), resp.geturl()
+
+
+def is_audio(ctype):
+    return ctype.lower().startswith("audio/") or "ogg" in ctype.lower()
+
+
 def build_station(st, prev):
-    """Adresse du direct : celle du fichier de réglages, sinon l'annuaire radio-browser.info."""
+    """Adresse du direct : celle des réglages si elle répond, sinon l'annuaire radio-browser.info."""
     out = {"id": st["id"], "name": st["name"], "short": st.get("short", st["name"]), "url": st.get("url", "")}
-    if out["url"] or not st.get("lookup"):
+    if not st.get("lookup"):
         return out
+    if out["url"]:
+        try:
+            out["type"], out["final"] = probe(out["url"])
+            if is_audio(out["type"]):
+                return out
+        except Exception as ex:
+            out["type"] = "erreur : %s" % ex
+        log("radio %s : adresse des réglages en échec (%s)" % (st["id"], out["type"]))
     try:
         q = urllib.parse.urlencode({"name": st["lookup"], "order": "votes", "reverse": "true",
-                                    "hidebroken": "true", "limit": 5})
+                                    "hidebroken": "true", "limit": 8})
         found = json.loads(fetch("https://all.api.radio-browser.info/json/stations/search?" + q).decode("utf-8"))
         for r in found:
             url = r.get("url_resolved") or r.get("url") or ""
-            if url.startswith("http") and ".m3u8" not in url:
-                out["url"], out["found"] = url, r.get("name", "")
-                try:
-                    req = urllib.request.Request(url, headers={"User-Agent": UA})
-                    with urllib.request.urlopen(req, timeout=15) as resp:
-                        out["type"], out["final"] = resp.headers.get("Content-Type", ""), resp.geturl()
-                except Exception as ex:
-                    out["type"] = "erreur : %s" % ex
+            if not url.startswith("http") or ".m3u8" in url:
+                continue
+            try:
+                ctype, final = probe(url)
+            except Exception:
+                continue
+            if is_audio(ctype):
+                out.update({"url": url, "found": r.get("name", ""), "type": ctype, "final": final})
                 return out
-        raise RuntimeError("aucun flux pour " + st["lookup"])
+        raise RuntimeError("aucun flux audio pour " + st["lookup"])
     except Exception as ex:
         log("radio %s : %s" % (st["id"], ex))
-        if prev and prev.get("url"):
+        if prev and prev.get("url") and not st.get("url"):
             out["url"], out["found"] = prev["url"], prev.get("found", "")
     return out
 
@@ -224,8 +243,8 @@ def main():
     with open(os.path.join(BASE, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     for s in stations:
-        if s.get("found"):
-            log("bilan radio %s | %s | %s | %s | %s" % (s["id"], s["url"], s["found"], s.get("type"), s.get("final")))
+        if s.get("type"):
+            log("bilan radio %s | %s | %s | %s | %s" % (s["id"], s["url"], s.get("found"), s.get("type"), s.get("final")))
     for p in podcasts:
         e = p["episodes"][0] if p["episodes"] else None
         log("bilan podcast %s | %s | %d | %s | %s | %s" % (

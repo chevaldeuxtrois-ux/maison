@@ -80,6 +80,27 @@
       "short": "BBC World",
       "url": "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
       "lookup": "BBC World Service"
+    },
+    {
+      "id": "wbls",
+      "name": "WBLS 107.5 FM",
+      "short": "WBLS 107.5",
+      "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/WBLSFM.mp3",
+      "lookup": "WBLS"
+    },
+    {
+      "id": "kday",
+      "name": "93.5 KDAY",
+      "short": "93.5 KDAY",
+      "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KDAYFM.mp3",
+      "lookup": "KDAY"
+    },
+    {
+      "id": "hot97",
+      "name": "WQHT Hot 97",
+      "short": "Hot 97",
+      "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTFM.mp3",
+      "lookup": "Hot 97"
     }
   ],
   "news": [
