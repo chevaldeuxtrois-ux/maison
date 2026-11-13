@@ -92,7 +92,8 @@
       "id": "wcbs",
       "name": "WCBS-FM 101.1",
       "short": "WCBS 101.1",
-      "lookup": "WCBS-FM"
+      "lookup": "WCBS",
+      "url": "https://live.amperwave.net/direct/audacy-wcbsfmaac-imc"
     },
     {
       "id": "kday",
