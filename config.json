@@ -279,22 +279,25 @@
       "group": "Sélection par genre"
     },
     {
-      "id": "groovesalad",
-      "name": "SomaFM Groove Salad",
-      "short": "Groove Salad",
+      "id": "rpglobal",
+      "name": "Radio Paradise · Global Mix",
+      "short": "Radio Paradise",
       "genre": "Lounge & World",
-      "url": "https://ice1.somafm.com/groovesalad-128-mp3",
+      "group": "Sélection par genre",
+      "url": "https://stream.radioparadise.com/global-128",
       "alt": [
-        "https://ice2.somafm.com/groovesalad-128-mp3"
+        "https://stream.radioparadise.com/world-etc-128",
+        "https://stream.radioparadise.com/global-192",
+        "https://stream.radioparadise.com/mellow-128"
       ],
-      "lookup": "Groove Salad",
+      "lookup": "Radio Paradise Global",
       "country": "US",
       "logo": [
-        "https://somafm.com/logos/512/groovesalad512.png",
-        "https://somafm.com/img3/groovesalad-400.jpg"
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Radio_Paradise_logo.svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Radio_Paradise_Logo.png"
       ],
-      "site": "https://somafm.com/groovesalad/",
-      "group": "Sélection par genre"
+      "site": "https://radioparadise.com/",
+      "logo_search": "Radio Paradise logo"
     },
     {
       "id": "couleur3",
@@ -378,21 +381,17 @@
       "group": "Ailleurs"
     },
     {
-      "id": "seventies",
-      "name": "SomaFM Left Coast 70s",
-      "short": "Left Coast 70s",
+      "id": "nostalgie",
+      "name": "Nostalgie",
+      "short": "Nostalgie",
       "group": "Ailleurs",
-      "url": "https://ice1.somafm.com/seventies-128-mp3",
-      "alt": [
-        "https://ice2.somafm.com/seventies-128-mp3"
-      ],
-      "lookup": "Left Coast 70s",
-      "country": "US",
+      "url": "https://scdn.nrjaudio.fm/adwz2/fr/30601/mp3_128.mp3?origine=fluxradios",
+      "lookup": "Nostalgie",
+      "country": "FR",
       "logo": [
-        "https://somafm.com/logos/512/seventies512.png",
-        "https://somafm.com/img3/seventies-400.jpg"
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Radio_Nostalgie_Logo_2020.svg"
       ],
-      "site": "https://somafm.com/seventies/"
+      "site": "https://www.nostalgie.fr/"
     }
   ],
   "news": [
