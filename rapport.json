@@ -1,0 +1,316 @@
+{
+ "url": "https://chevaldeuxtrois-ux.github.io/maison/?v=d502b994c3a6c06d4f10842a4e0f2344c425b6ff",
+ "date": "2026-11-14 09:07 UTC",
+ "vues": [
+  {
+   "vue": "iphone-portrait",
+   "moteur": "chrome",
+   "taille": "390x844",
+   "problemes": []
+  },
+  {
+   "vue": "iphone-paysage",
+   "moteur": "chrome",
+   "taille": "844x390",
+   "problemes": []
+  },
+  {
+   "vue": "petit-iphone-portrait",
+   "moteur": "chrome",
+   "taille": "320x568",
+   "problemes": []
+  },
+  {
+   "vue": "ipad-paysage",
+   "moteur": "chrome",
+   "taille": "1024x748",
+   "problemes": []
+  },
+  {
+   "vue": "ipad-portrait",
+   "moteur": "chrome",
+   "taille": "768x1004",
+   "problemes": []
+  },
+  {
+   "vue": "ordinateur",
+   "moteur": "chrome",
+   "taille": "1440x900",
+   "problemes": []
+  },
+  {
+   "vue": "iphone-portrait",
+   "moteur": "webkit",
+   "taille": "390x844",
+   "problemes": []
+  },
+  {
+   "vue": "iphone-paysage",
+   "moteur": "webkit",
+   "taille": "844x390",
+   "problemes": []
+  },
+  {
+   "vue": "petit-iphone-portrait",
+   "moteur": "webkit",
+   "taille": "320x568",
+   "problemes": []
+  }
+ ],
+ "radios": [
+  {
+   "station": "France Inter",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "500x500 https://upload.wikimedia.org/wikipedia/commons/a/a0/France_Inter_logo_2021.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://icecast.radiofrance.fr/franceinter-midfi.mp3"
+  },
+  {
+   "station": "franceinfo",
+   "lecture": true,
+   "delai_s": 1.5,
+   "etat": "● En direct",
+   "logo": "510x78 https://upload.wikimedia.org/wikipedia/commons/0/03/Franceinfo.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://icecast.radiofrance.fr/franceinfo-midfi.mp3"
+  },
+  {
+   "station": "France Culture",
+   "lecture": true,
+   "delai_s": 1.0,
+   "etat": "● En direct",
+   "logo": "500x500 https://upload.wikimedia.org/wikipedia/commons/d/d6/France_Culture_logo_2021.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://icecast.radiofrance.fr/franceculture-midfi.mp3"
+  },
+  {
+   "station": "France Musique",
+   "lecture": true,
+   "delai_s": 1.5,
+   "etat": "● En direct",
+   "logo": "500x500 https://upload.wikimedia.org/wikipedia/commons/6/6c/France_Musique_logo_2021.svg",
+   "source": "https://icecast.radiofrance.fr/francemusique-midfi.mp3"
+  },
+  {
+   "station": "FIP",
+   "lecture": true,
+   "delai_s": 1.0,
+   "etat": "● En direct",
+   "logo": "500x500 https://upload.wikimedia.org/wikipedia/commons/1/16/FIP_logo_2021.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://icecast.radiofrance.fr/fip-midfi.mp3"
+  },
+  {
+   "station": "Mouv'",
+   "lecture": true,
+   "delai_s": 1.5,
+   "etat": "● En direct",
+   "logo": "500x234 https://upload.wikimedia.org/wikipedia/commons/d/db/Mouv_logo_2022.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://icecast.radiofrance.fr/mouv-midfi.mp3"
+  },
+  {
+   "station": "FIP Jazz",
+   "lecture": true,
+   "delai_s": 1.0,
+   "etat": "● En direct",
+   "logo": "300x300 https://cdn-profiles.tunein.com/s262533/images/logod.png?t=636966437720000000",
+   "source": "https://icecast.radiofrance.fr/fipjazz-midfi.mp3"
+  },
+  {
+   "station": "FIP Groove",
+   "lecture": true,
+   "delai_s": 1.5,
+   "etat": "● En direct",
+   "logo": "2048x2048 https://www.radiofrance.fr/pikapi/images/95cf76c3-26bc-404e-be1c-b81666188c3f/2048",
+   "source": "https://icecast.radiofrance.fr/fipgroove-midfi.mp3"
+  },
+  {
+   "station": "Radio Pomme d'Api",
+   "lecture": true,
+   "delai_s": 2.5,
+   "etat": "● En direct",
+   "logo": "pas de logo",
+   "source": "https://www.radiopommedapi.com/radio.aac"
+  },
+  {
+   "station": "Radio Nova",
+   "lecture": true,
+   "delai_s": 2.5,
+   "etat": "● En direct",
+   "logo": "360x360 https://www.nova.fr/wp-content/thumbnails/uploads/sites/2/2024/08/cropped-favicon-4-t-360x360.png",
+   "source": "https://novazz.ice.infomaniak.ch/novazz-128.mp3"
+  },
+  {
+   "station": "BBC World Service",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "150x150 https://rmp.files.bbci.co.uk/rmp-shared-assets/1.4.0/img/network-logos/national/bbc_world_service_colour.svg",
+   "source": "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
+  },
+  {
+   "station": "NPR News",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "159x53 https://upload.wikimedia.org/wikipedia/commons/d/d7/National_Public_Radio_logo.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://npr-ice.streamguys1.com/live.mp3"
+  },
+  {
+   "station": "ABC NewsRadio",
+   "lecture": true,
+   "delai_s": 1.0,
+   "etat": "● En direct",
+   "logo": "300x98 https://upload.wikimedia.org/wikipedia/commons/f/f1/ABC_News_Radio_logo.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://mediaserviceslive.akamaized.net/hls/live/2038311/newsradio/index.m3u8"
+  },
+  {
+   "station": "NRJ",
+   "lecture": true,
+   "delai_s": 2.5,
+   "etat": "● En direct",
+   "logo": "570x570 https://upload.wikimedia.org/wikipedia/commons/4/44/NRJ_Radio.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://scdn.nrjaudio.fm/adwz2/fr/30001/mp3_128.mp3?origine=fluxradios"
+  },
+  {
+   "station": "KEXP 90.3 Seattle",
+   "lecture": true,
+   "delai_s": 3.0,
+   "etat": "● En direct",
+   "logo": "112x150 https://upload.wikimedia.org/wikipedia/commons/e/ef/KEXP_logo_2022_%28one-color%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://kexp-mp3-128.streamguys1.com/kexp128.mp3"
+  },
+  {
+   "station": "WBGO Jazz 88.3",
+   "lecture": true,
+   "delai_s": 1.0,
+   "etat": "● En direct",
+   "logo": "180x180 https://www.wbgo.org/apple-touch-icon.png",
+   "source": "https://ais-sa8.cdnstream1.com/3629_128.mp3"
+  },
+  {
+   "station": "Solar Radio",
+   "lecture": true,
+   "delai_s": 2.5,
+   "etat": "● En direct",
+   "logo": "500x509 https://solarradio.com/wp-content/uploads/2020/04/proposed-solar-logo-small.jpg",
+   "source": "https://listen-msmn.sharp-stream.com/solarlow.mp3"
+  },
+  {
+   "station": "Ibiza Global Radio",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "180x180 https://www.ibizaglobalradio.com/dist/img/favicon/apple-touch-icon.png",
+   "source": "https://listenssl.ibizaglobalradio.com:8024/ibizaglobalradio.mp3"
+  },
+  {
+   "station": "BBC Radio 1Xtra",
+   "lecture": true,
+   "delai_s": 1.0,
+   "etat": "● En direct",
+   "logo": "400x115 https://upload.wikimedia.org/wikipedia/commons/9/98/BBC_Radio_1Xtra_2022.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://as-hls-ww-live.akamaized.net/pool_92079267/live/ww/bbc_1xtra/bbc_1xtra.isml/bbc_1xtra-audio%3d96000.no"
+  },
+  {
+   "station": "WQXR 105.9 New York",
+   "lecture": true,
+   "delai_s": 1.5,
+   "etat": "● En direct",
+   "logo": "300x66 https://upload.wikimedia.org/wikipedia/commons/1/11/WQXR-FM_logo.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://stream.wqxr.org/wqxr"
+  },
+  {
+   "station": "Radio Paradise · Global Mix",
+   "lecture": true,
+   "delai_s": 1.0,
+   "etat": "● En direct",
+   "logo": "180x180 https://radioparadise.com/apple-touch-icon.png",
+   "source": "https://stream.radioparadise.com/global-128"
+  },
+  {
+   "station": "Couleur 3",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "494x417 https://upload.wikimedia.org/wikipedia/commons/3/3a/Couleur_3_logo.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://stream.srg-ssr.ch/srgssr/couleur3/mp3/128"
+  },
+  {
+   "station": "BBC Radio 1",
+   "lecture": true,
+   "delai_s": 1.0,
+   "etat": "● En direct",
+   "logo": "300x129 https://upload.wikimedia.org/wikipedia/commons/3/3d/BBC_Radio_1_2021.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://as-hls-ww-live.akamaized.net/pool_01505109/live/ww/bbc_radio_one/bbc_radio_one.isml/bbc_radio_one-audi"
+  },
+  {
+   "station": "93.5 KDAY",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "600x315 https://media-cdn.socastsrm.com/uploads/station/3559/fbShare.png?r=100307",
+   "source": "https://playerservices.streamtheworld.com/api/livestream-redirect/KDAYFM.mp3"
+  },
+  {
+   "station": "WQHT Hot 97",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "180x180 https://www.hot97.com/wp-content/uploads/sites/2/2024/03/cropped-hot97-site-icon.png?w=180",
+   "source": "https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTFM.mp3"
+  },
+  {
+   "station": "WFMU",
+   "lecture": true,
+   "delai_s": 5.5,
+   "etat": "● En direct",
+   "logo": "165x166 https://wfmu.org/images/wfmu_logo_94.gif",
+   "source": "https://stream0.wfmu.org/freeform-128k"
+  },
+  {
+   "station": "WKCR 89.9 FM",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "pas de logo",
+   "source": "https://wkcr.streamguys1.com/live"
+  },
+  {
+   "station": "Nostalgie",
+   "lecture": true,
+   "delai_s": 2.0,
+   "etat": "● En direct",
+   "logo": "451x179 https://upload.wikimedia.org/wikipedia/commons/f/f3/Radio_Nostalgie_Logo_2020.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+   "source": "https://streaming.nrjaudio.fm/oug7girb92oc?origine=tingfm"
+  }
+ ],
+ "rotation": [
+  {
+   "taille": "768x1004",
+   "son_continue": true,
+   "disposition": "m-stack",
+   "station_marquee": true
+  },
+  {
+   "taille": "1024x748",
+   "son_continue": true,
+   "disposition": "m-grid focus",
+   "station_marquee": true
+  },
+  {
+   "taille": "390x844",
+   "son_continue": true,
+   "disposition": "m-stack",
+   "station_marquee": true
+  },
+  {
+   "taille": "844x390",
+   "son_continue": true,
+   "disposition": "m-rail focus",
+   "station_marquee": true
+  }
+ ],
+ "podcast": {
+  "emission": "Géopolitique",
+  "lecture": true
+ }
+}

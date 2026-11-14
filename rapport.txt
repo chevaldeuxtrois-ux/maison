@@ -1,0 +1,42 @@
+Essais du 2026-11-14 09:07 UTC sur https://chevaldeuxtrois-ux.github.io/maison/?v=d502b994c3a6c06d4f10842a4e0f2344c425b6ff
+
+[chrome iphone-portrait 390x844] OK
+[chrome iphone-paysage 844x390] OK
+[chrome petit-iphone-portrait 320x568] OK
+[chrome ipad-paysage 1024x748] OK
+[chrome ipad-portrait 768x1004] OK
+[chrome ordinateur 1440x900] OK
+[webkit iphone-portrait 390x844] OK
+[webkit iphone-paysage 844x390] OK
+[webkit petit-iphone-portrait 320x568] OK
+
+radio France Inter           LECTURE OK en 2.0s | https://icecast.radiofrance.fr/franceinter-midfi.mp3 | logo : 500x500 https://upload.wikimedia.org/wikipedia/commons/a/a0/France_Inter_logo_2021.svg?utm_source=commons.wiki
+radio franceinfo             LECTURE OK en 1.5s | https://icecast.radiofrance.fr/franceinfo-midfi.mp3 | logo : 510x78 https://upload.wikimedia.org/wikipedia/commons/0/03/Franceinfo.svg?utm_source=commons.wikimedia.org&utm
+radio France Culture         LECTURE OK en 1.0s | https://icecast.radiofrance.fr/franceculture-midfi.mp3 | logo : 500x500 https://upload.wikimedia.org/wikipedia/commons/d/d6/France_Culture_logo_2021.svg?utm_source=commons.wi
+radio France Musique         LECTURE OK en 1.5s | https://icecast.radiofrance.fr/francemusique-midfi.mp3 | logo : 500x500 https://upload.wikimedia.org/wikipedia/commons/6/6c/France_Musique_logo_2021.svg
+radio FIP                    LECTURE OK en 1.0s | https://icecast.radiofrance.fr/fip-midfi.mp3 | logo : 500x500 https://upload.wikimedia.org/wikipedia/commons/1/16/FIP_logo_2021.svg?utm_source=commons.wikimedia.org
+radio Mouv'                  LECTURE OK en 1.5s | https://icecast.radiofrance.fr/mouv-midfi.mp3 | logo : 500x234 https://upload.wikimedia.org/wikipedia/commons/d/db/Mouv_logo_2022.svg?utm_source=commons.wikimedia.or
+radio FIP Jazz               LECTURE OK en 1.0s | https://icecast.radiofrance.fr/fipjazz-midfi.mp3 | logo : 300x300 https://cdn-profiles.tunein.com/s262533/images/logod.png?t=636966437720000000
+radio FIP Groove             LECTURE OK en 1.5s | https://icecast.radiofrance.fr/fipgroove-midfi.mp3 | logo : 2048x2048 https://www.radiofrance.fr/pikapi/images/95cf76c3-26bc-404e-be1c-b81666188c3f/2048
+radio Radio Pomme d'Api      LECTURE OK en 2.5s | https://www.radiopommedapi.com/radio.aac | logo : pas de logo
+radio Radio Nova             LECTURE OK en 2.5s | https://novazz.ice.infomaniak.ch/novazz-128.mp3 | logo : 360x360 https://www.nova.fr/wp-content/thumbnails/uploads/sites/2/2024/08/cropped-favicon-4-t-360x360.png
+radio BBC World Service      LECTURE OK en 2.0s | https://stream.live.vc.bbcmedia.co.uk/bbc_world_service | logo : 150x150 https://rmp.files.bbci.co.uk/rmp-shared-assets/1.4.0/img/network-logos/national/bbc_world_service_colo
+radio NPR News               LECTURE OK en 2.0s | https://npr-ice.streamguys1.com/live.mp3 | logo : 159x53 https://upload.wikimedia.org/wikipedia/commons/d/d7/National_Public_Radio_logo.svg?utm_source=commons.w
+radio ABC NewsRadio          LECTURE OK en 1.0s | https://mediaserviceslive.akamaized.net/hls/live/2038311/newsradio/ind | logo : 300x98 https://upload.wikimedia.org/wikipedia/commons/f/f1/ABC_News_Radio_logo.svg?utm_source=commons.wikimedi
+radio NRJ                    LECTURE OK en 2.5s | https://scdn.nrjaudio.fm/adwz2/fr/30001/mp3_128.mp3?origine=fluxradios | logo : 570x570 https://upload.wikimedia.org/wikipedia/commons/4/44/NRJ_Radio.png?utm_source=commons.wikimedia.org&utm
+radio KEXP 90.3 Seattle      LECTURE OK en 3.0s | https://kexp-mp3-128.streamguys1.com/kexp128.mp3 | logo : 112x150 https://upload.wikimedia.org/wikipedia/commons/e/ef/KEXP_logo_2022_%28one-color%29.svg?utm_source=comm
+radio WBGO Jazz 88.3         LECTURE OK en 1.0s | https://ais-sa8.cdnstream1.com/3629_128.mp3 | logo : 180x180 https://www.wbgo.org/apple-touch-icon.png
+radio Solar Radio            LECTURE OK en 2.5s | https://listen-msmn.sharp-stream.com/solarlow.mp3 | logo : 500x509 https://solarradio.com/wp-content/uploads/2020/04/proposed-solar-logo-small.jpg
+radio Ibiza Global Radio     LECTURE OK en 2.0s | https://listenssl.ibizaglobalradio.com:8024/ibizaglobalradio.mp3 | logo : 180x180 https://www.ibizaglobalradio.com/dist/img/favicon/apple-touch-icon.png
+radio BBC Radio 1Xtra        LECTURE OK en 1.0s | https://as-hls-ww-live.akamaized.net/pool_92079267/live/ww/bbc_1xtra/b | logo : 400x115 https://upload.wikimedia.org/wikipedia/commons/9/98/BBC_Radio_1Xtra_2022.svg?utm_source=commons.wikime
+radio WQXR 105.9 New York    LECTURE OK en 1.5s | https://stream.wqxr.org/wqxr | logo : 300x66 https://upload.wikimedia.org/wikipedia/commons/1/11/WQXR-FM_logo.svg?utm_source=commons.wikimedia.org&u
+radio Radio Paradise · Global Mix LECTURE OK en 1.0s | https://stream.radioparadise.com/global-128 | logo : 180x180 https://radioparadise.com/apple-touch-icon.png
+radio Couleur 3              LECTURE OK en 2.0s | https://stream.srg-ssr.ch/srgssr/couleur3/mp3/128 | logo : 494x417 https://upload.wikimedia.org/wikipedia/commons/3/3a/Couleur_3_logo.svg?utm_source=commons.wikimedia.or
+radio BBC Radio 1            LECTURE OK en 1.0s | https://as-hls-ww-live.akamaized.net/pool_01505109/live/ww/bbc_radio_o | logo : 300x129 https://upload.wikimedia.org/wikipedia/commons/3/3d/BBC_Radio_1_2021.svg?utm_source=commons.wikimedia.
+radio 93.5 KDAY              LECTURE OK en 2.0s | https://playerservices.streamtheworld.com/api/livestream-redirect/KDAY | logo : 600x315 https://media-cdn.socastsrm.com/uploads/station/3559/fbShare.png?r=100307
+radio WQHT Hot 97            LECTURE OK en 2.0s | https://playerservices.streamtheworld.com/api/livestream-redirect/WQHT | logo : 180x180 https://www.hot97.com/wp-content/uploads/sites/2/2024/03/cropped-hot97-site-icon.png?w=180
+radio WFMU                   LECTURE OK en 5.5s | https://stream0.wfmu.org/freeform-128k | logo : 165x166 https://wfmu.org/images/wfmu_logo_94.gif
+radio WKCR 89.9 FM           LECTURE OK en 2.0s | https://wkcr.streamguys1.com/live | logo : pas de logo
+radio Nostalgie              LECTURE OK en 2.0s | https://streaming.nrjaudio.fm/oug7girb92oc?origine=tingfm | logo : 451x179 https://upload.wikimedia.org/wikipedia/commons/f/f3/Radio_Nostalgie_Logo_2020.svg?utm_source=commons.w
+podcast : {"emission": "Géopolitique", "lecture": true}
+rotation : [{"taille": "768x1004", "son_continue": true, "disposition": "m-stack", "station_marquee": true}, {"taille": "1024x748", "son_continue": true, "disposition": "m-grid focus", "station_marquee": true}, {"taille": "390x844", "son_continue": true, "disposition": "m-stack", "station_marquee": true}, {"taille": "844x390", "son_continue": true, "disposition": "m-rail focus", "station_marquee": true}]
