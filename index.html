@@ -164,17 +164,23 @@ html.m-stack-html { height: auto; }
 #stations { display: grid; grid-gap: 5px; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
 .tile { display: block; width: 100%; background: #dededa; color: #0c0c0c; border-radius: 6px; text-align: center; font-weight: 700; letter-spacing: -0.01em; overflow: hidden; position: relative; }
 .tile:active { background: #f0f0ec; }
-#stations .tile { height: 48px; padding: 0 4px; font-size: 11px; line-height: 1.1; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; }
+#stations .tile { height: 48px; padding: 0 4px; font-size: 11px; line-height: 1.1; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; }
+.grp { grid-column: 1 / -1; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6; padding: 10px 4px 1px; }
+.grp:first-child { padding-top: 0; }
+.gn { display: block; -webkit-flex: none; flex: none; font-size: 10px; font-weight: 700; opacity: 0.62; margin-top: 4px; white-space: nowrap; }
+/* Vue d'ensemble : grille compacte de quatre rangées qui défile, sans intertitres. */
+.overview .grp, .overview .gn { display: none; }
+.overview #s-radio .scroll { max-height: 207px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 #stations .tile.on { background: #f5821f; }
 #stations .tile.ko { opacity: 0.45; }
 /* Logos officiels, affichés en noir et blanc ; le blanc de leur fond se fond dans la tuile. */
 .logo { display: block; max-width: 84%; max-height: 34px; -webkit-filter: grayscale(1) contrast(1.15); filter: grayscale(1) contrast(1.15); mix-blend-mode: multiply; pointer-events: none; }
 #main #stations, .m-stack #stations { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); grid-gap: 6px; }
-#main #stations .tile, .m-stack #stations .tile { height: 68px; font-size: 13px; }
-#main .logo, .m-stack .logo { max-height: 46px; max-width: 78%; }
+#main #stations .tile, .m-stack #stations .tile { height: 78px; font-size: 13px; }
+#main .logo, .m-stack .logo { max-height: 42px; max-width: 78%; }
 .m-rail #main #stations { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
-.m-rail #main #stations .tile { height: 56px; }
-.m-rail #main .logo { max-height: 38px; }
+.m-rail #main #stations .tile { height: 66px; }
+.m-rail #main .logo { max-height: 34px; }
 #radio-tools { display: none; padding: 10px 4px 4px; font-size: 12px; line-height: 1.35; }
 #main #radio-tools, .m-stack #radio-tools { display: block; }
 .btn { display: inline-block; background: #0c0c0c; color: #dededa; border-radius: 6px; padding: 0 14px; min-height: 44px; line-height: 44px; font-size: 13px; font-weight: 700; }
@@ -233,6 +239,9 @@ html.m-stack-html { height: auto; }
 .sp-ctl .pp { background: #0c0c0c; color: #f5821f; }
 .sp-ctl svg { width: 20px; height: 20px; margin: 0 auto; }
 .sp-dev { display: block; width: 100%; min-height: 44px; font-size: 12px; opacity: 0.9; text-decoration: underline; }
+.sp-paste { display: -webkit-flex; display: flex; margin-top: 10px; }
+.sp-paste input { -webkit-flex: 1 1 0; flex: 1 1 0; min-width: 0; font: inherit; font-size: 16px; height: 44px; border: 0; border-radius: 6px; background: rgba(12, 12, 12, 0.35); color: inherit;
+  padding: 0 10px; margin-right: 6px; -webkit-appearance: none; -webkit-user-select: text; user-select: text; }
 .sp-help { font-size: 12px; line-height: 1.35; opacity: 0.9; margin-top: 10px; }
 .sp-share { margin-top: 6px; font-size: 12px; line-height: 1.35; }
 .sp-share img { display: block; width: 180px; height: 180px; background: #fff; border-radius: 6px; margin-bottom: 8px; }
@@ -249,6 +258,8 @@ html.m-stack-html { height: auto; }
 #pl-kind.live { opacity: 1; color: #f5821f; }
 #pl-title { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #pl-time { font-size: 13px; opacity: 0.7; margin: 0 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#pl-vol { -webkit-flex: none; flex: none; width: 110px; height: 44px; margin: 0 6px; }
+.m-stack #pl-vol, .m-rail #pl-vol { display: none; }
 .ctl { width: 50px; height: 50px; border-radius: 6px; background: #6b6b6b; margin-left: 5px; font-size: 13px; font-weight: 700; text-align: center; -webkit-flex: none; flex: none; }
 .ctl:active { background: #7a7a7a; }
 .ctl[disabled] { opacity: 0.35; }
@@ -352,6 +363,7 @@ html.m-stack-html { height: auto; }
     <div id="pl-title">Choisis une radio ou un podcast</div>
   </div>
   <div id="pl-time"></div>
+  <input id="pl-vol" type="range" min="0" max="100" value="100" aria-label="Volume" hidden>
   <button class="ctl" id="pl-back" disabled>−30</button>
   <button class="ctl" id="pl-play" aria-label="Lecture ou pause"></button>
   <button class="ctl" id="pl-fwd" disabled>+30</button>
@@ -770,6 +782,15 @@ html.m-stack-html { height: auto; }
     if (!current || current.kind !== 'pod' || !isFinite(au.duration)) { return; }
     try { au.currentTime = Math.max(0, Math.min(au.duration - 1, au.currentTime + delta)); } catch (e) {}
   }
+  // Le volume ne se règle depuis une page que hors iPhone et iPad (là, ce sont les boutons de l'appareil).
+  (function () {
+    var v = parseFloat(recall('volume') || '1'), settable = false;
+    try { au.volume = 0.5; settable = au.volume === 0.5; au.volume = isFinite(v) ? Math.max(0, Math.min(1, v)) : 1; } catch (e) { settable = false; }
+    if (!settable) { return; }
+    $('pl-vol').hidden = false;
+    $('pl-vol').value = Math.round(au.volume * 100);
+    $('pl-vol').oninput = $('pl-vol').onchange = function () { au.volume = this.value / 100; store('volume', String(au.volume)); };
+  }());
   $('pl-back').onclick = function () { seek(-30); };
   $('pl-fwd').onclick = function () { seek(30); };
   $('pl-bar').onclick = function (e) {
@@ -782,14 +803,16 @@ html.m-stack-html { height: auto; }
   var badLogo = {}, ko = {};
   try { ko = JSON.parse(recall('radio_ko') || '{}') || {}; } catch (e) { ko = {}; }
   function paintStations() {
-    var html = '', i, st, on, logo, playing = '';
+    var html = '', i, st, on, logo, playing = '', group = null;
     for (i = 0; i < stations.length; i++) {
       st = stations[i];
+      if (st.group && st.group !== group) { group = st.group; html += '<div class="grp">' + esc(group) + '</div>'; }
       on = current && current.kind === 'live' && current.id === st.id && wanted;
       if (on) { playing = st.name; }
       logo = st.logo && !badLogo[st.id];
       html += '<button class="tile' + (on ? ' on' : '') + (ko[st.id] ? ' ko' : '') + '" data-i="' + i + '" aria-label="' + esc(st.name) + '">' +
-        (logo ? '<img class="logo" alt="' + esc(st['short'] || st.name) + '" src="' + esc(st.logo) + '">' : esc(st['short'] || st.name)) + '</button>';
+        (logo ? '<img class="logo" alt="' + esc(st['short'] || st.name) + '" src="' + esc(st.logo) + '">' : '<span>' + esc(st['short'] || st.name) + '</span>') +
+        (st.genre ? '<span class="gn">' + esc(st.genre) + '</span>' : '') + '</button>';
     }
     $('stations').innerHTML = html;
     sum('radio', playing ? playing + ' · en direct' : stations.length ? stations.length + ' stations en direct' : 'en direct');
@@ -894,7 +917,8 @@ html.m-stack-html { height: auto; }
   $('back').onclick = function () { openShow = null; paintPods(); };
 
   /* ---------- Spotify (télécommande : la musique sort de l'app Spotify) ---------- */
-  var SP = { cid: recall('sp_cid') || '', tok: null, state: null, devices: [], lists: null, note: '', tick: 0, waiting: null, share: '', qr: '' };
+  var SP = { cid: recall('sp_cid') || '', tok: null, state: null, devices: [], lists: null, note: '', tick: 0, waiting: null, share: '', qr: '', given: '' };
+  var STANDALONE = window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
   try { SP.tok = JSON.parse(recall('spotify') || 'null'); } catch (e) { SP.tok = null; }
   var SP_SCOPE = 'user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative';
   var SP_PREV = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 5h2.5v14H5zM20 5v14L9 12z"/></svg>';
@@ -999,10 +1023,25 @@ html.m-stack-html { height: auto; }
     var html = '', st = SP.state, dev = spTarget(), item = st && st.item, artists = [], i;
     if (!SP.cid) { $('sp-now').innerHTML = '<div class="empty">Spotify n\'est pas encore configuré.</div>'; $('sp-lists').innerHTML = ''; sum('spotify', 'télécommande'); return; }
     if (!SP.tok) {
+      if (SP.given) {
+        $('sp-now').innerHTML = '<div class="sp-help"><b>Prêt pour l\'installation.</b> Cette page transporte maintenant la connexion Spotify :</div>' +
+          '<div class="sp-help">1. Si une icône « Maison » existe déjà sur l\'écran d\'accueil, supprime-la.<br>' +
+          '2. Touche le bouton Partager de Safari (le carré avec une flèche).<br>3. Touche « Sur l\'écran d\'accueil », puis « Ajouter ».<br>' +
+          '4. Ouvre la nouvelle icône : Spotify y est connecté.</div>' +
+          '<div class="sp-help">Ici, dans Safari, Spotify est maintenant déconnecté : la connexion a été confiée à l\'app installée.</div>' +
+          '<button class="sp-dev" data-sp="undo">Annuler et garder la connexion dans Safari</button>';
+        $('sp-lists').innerHTML = '';
+        sum('spotify', 'prêt pour l\'installation');
+        return;
+      }
       $('sp-now').innerHTML = (SP.note ? '<div class="sp-help"><b>' + esc(SP.note) + '</b></div>' : '') +
+        (STANDALONE ? '<div class="sp-help">L\'app installée ne partage pas la mémoire de Safari. Pour la connecter : ouvre le dashboard dans Safari, ' +
+          'section Spotify, puis « Installer sur l\'écran d\'accueil avec Spotify ». Ou colle ci-dessous un lien de connexion copié depuis Safari ou ton téléphone.</div>' : '') +
         '<button class="btn" data-sp="login">Connecter Spotify</button>' +
-        '<div class="sp-help">Sur un appareil ancien où la page Spotify ne répond pas : connecte Spotify ici depuis ton téléphone, ' +
-        'puis touche « Envoyer la connexion à un autre appareil ».</div>';
+        '<div class="sp-paste"><input id="sp-paste" type="text" placeholder="Coller un lien de connexion" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">' +
+        '<button class="btn" data-sp="paste">OK</button></div>' +
+        (STANDALONE ? '' : '<div class="sp-help">Sur un appareil ancien où la page Spotify ne répond pas : connecte Spotify depuis ton téléphone, ' +
+        'puis touche « Envoyer la connexion à un autre appareil ».</div>');
       $('sp-lists').innerHTML = '';
       sum('spotify', 'non connecté');
       return;
@@ -1024,7 +1063,8 @@ html.m-stack-html { height: auto; }
       (SP.share ? '<div class="sp-share">' + (SP.qr ? '<img alt="Code à scanner" src="' + SP.qr + '">' : '') +
         '<div>Sur l\'autre appareil, vise ce code avec l\'appareil photo puis touche la bannière. Ou envoie-toi ce lien et ouvre-le dans Safari :</div>' +
         '<div class="sp-link">' + esc(SP.share) + '</div></div>'
-        : '<button class="sp-dev" data-sp="share">Envoyer la connexion à un autre appareil</button>');
+        : '<button class="sp-dev" data-sp="share">Envoyer la connexion à un autre appareil</button>' +
+          (STANDALONE ? '' : '<button class="sp-dev" data-sp="install">Installer sur l\'écran d\'accueil avec Spotify</button>'));
     $('sp-now').innerHTML = html;
   }
   function paintSpLists() {
@@ -1091,6 +1131,33 @@ html.m-stack-html { height: auto; }
       }
       else if (act === 'next') { sp('POST', '/me/player/next', null, spDone); }
       else if (act === 'prev') { sp('POST', '/me/player/previous', null, spDone); }
+      else if (act === 'install') {
+        // L'app installée a sa propre mémoire, séparée de Safari. On lui confie la connexion par l'adresse
+        // de la page : l'icône de l'écran d'accueil garde cette adresse et la relit à son premier lancement.
+        spRefresh(function () {
+          if (!SP.tok) { paintSp(); return; }
+          var r = SP.tok.refresh;
+          store('sp_given', r);
+          SP.given = r; SP.tok = null; SP.state = null; SP.lists = null; SP.share = '';
+          store('spotify', 'null');
+          try { window.history.replaceState(null, '', window.location.pathname + '#sp=' + encodeURIComponent(r)); } catch (e) { window.location.hash = 'sp=' + encodeURIComponent(r); }
+          paintSp(); paintSpLists();
+        });
+      }
+      else if (act === 'undo') {
+        SP.tok = { access: '', refresh: SP.given, exp: 0 };
+        store('spotify', JSON.stringify(SP.tok)); store('sp_given', ''); SP.given = '';
+        try { window.history.replaceState(null, '', window.location.pathname); } catch (e) {}
+        spOpen();
+      }
+      else if (act === 'paste') {
+        var raw = ($('sp-paste').value || '').replace(/^\s+|\s+$/g, ''), pm = /sp=([^&\s]+)/.exec(raw), tk = pm ? decodeURIComponent(pm[1]) : raw;
+        if (tk.length < 40 || /\s/.test(tk)) { SP.note = 'Ce lien de connexion n\'est pas reconnu.'; paintSp(); return; }
+        SP.note = '';
+        SP.tok = { access: '', refresh: tk, exp: 0 };
+        store('spotify', JSON.stringify(SP.tok)); store('sp_imported', tk);
+        spRefresh(function (ok) { if (!ok) { SP.note = 'Ce lien de connexion n\'est plus valable. Demandes-en un nouveau.'; } spOpen(); });
+      }
       else if (act === 'share') {
         // Le lien transporte l'autorisation dans sa partie « # », qui n'est jamais envoyée à un serveur.
         spRefresh(function () {
@@ -1119,12 +1186,18 @@ html.m-stack-html { height: auto; }
     if (t && SP.lists) { spPlay({ context_uri: SP.lists[+t.getAttribute('data-list')].uri }); }
   };
   window.afterLayout = function () { if (open === 'spotify') { spOpen(); } };
-  // Connexion reçue d'un autre appareil : #sp=… dans l'adresse.
+  // Connexion reçue par l'adresse (#sp=…) : lien envoyé par un autre appareil, ou adresse gardée par l'icône
+  // de l'écran d'accueil. Cette adresse est relue à chaque lancement de l'app installée, alors que Spotify
+  // renouvelle l'autorisation au fil du temps : on ne l'accepte donc qu'une fois.
   (function () {
-    var m = /^#sp=(.+)$/.exec(window.location.hash);
+    var m = /^#sp=(.+)$/.exec(window.location.hash), t;
     if (!m) { return; }
-    try { window.history.replaceState(null, '', window.location.pathname); } catch (e) { window.location.hash = ''; }
-    SP.tok = { access: '', refresh: decodeURIComponent(m[1]), exp: 0 };
+    t = decodeURIComponent(m[1]);
+    if (t === recall('sp_given')) { SP.given = t; open = 'spotify'; return; }     // Safari, en attente d'installation
+    if (t === recall('sp_imported')) { return; }                                   // déjà reçue ici
+    store('sp_imported', t);
+    if (!STANDALONE) { try { window.history.replaceState(null, '', window.location.pathname); } catch (e) { window.location.hash = ''; } }
+    SP.tok = { access: '', refresh: t, exp: 0 };
     store('spotify', JSON.stringify(SP.tok));
     open = 'spotify';
   }());

@@ -151,7 +151,8 @@ def check_stream(url):
 
 def build_station(st, prev):
     """Adresse du direct : la première qui envoie vraiment du son parmi les réglages, puis l'annuaire radio-browser.info."""
-    out = {"id": st["id"], "name": st["name"], "short": st.get("short", st["name"]), "url": ""}
+    out = {"id": st["id"], "name": st["name"], "short": st.get("short", st["name"]), "url": "",
+           "group": st.get("group", ""), "genre": st.get("genre", "")}
     tried = []
     for url in [st.get("url")] + st.get("alt", []):
         if not url:
@@ -181,8 +182,7 @@ def build_station(st, prev):
     log("radio %s : aucun flux valide. %s" % (st["id"], " ; ".join(tried)[:900]))
     if prev and prev.get("url"):          # panne passagère : on garde l'adresse connue
         out["url"], out["check"] = prev["url"], "non vérifié ce tour-ci"
-    elif st.get("url"):
-        out["url"], out["check"] = st["url"], "ÉCHEC du contrôle"
+    # Une station qui n'a jamais passé le contrôle n'est pas publiée.
     return out
 
 

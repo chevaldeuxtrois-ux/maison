@@ -156,6 +156,26 @@ def run_audio(browser, url, out, report):
         page.locator("#stations .tile").nth(i).click() if ok else None
         page.wait_for_timeout(300)
     page.screenshot(path=os.path.join(out, "radios-logos.png"))
+    # La lecture tient-elle quand l'écran tourne (paysage -> portrait -> paysage) ?
+    try:
+        page.locator("#stations .tile").nth(0).click()
+        page.wait_for_timeout(6000)
+        steps = []
+        for size in ((768, 1004), (1024, 748), (390, 844), (844, 390)):
+            page.set_viewport_size({"width": size[0], "height": size[1]})
+            a0 = page.evaluate("document.getElementById('au').currentTime")
+            page.wait_for_timeout(3000)
+            a1 = page.evaluate("document.getElementById('au').currentTime")
+            steps.append({"taille": "%dx%d" % size, "son_continue": a1 > a0 + 1.5, "disposition": page.evaluate("document.body.className"),
+                          "station_marquee": page.locator("#stations .tile.on").count() == 1})
+        report["rotation"] = steps
+        page.set_viewport_size({"width": 1440, "height": 900})
+        page.wait_for_timeout(500)
+        if page.locator("#main #s-radio").count() == 0:
+            page.click("#s-radio .sec-head")
+        page.locator("#stations .tile.on").first.click()
+    except Exception as ex:
+        report["rotation"] = "erreur : %s" % str(ex).splitlines()[0][:200]
     # Un podcast : le dernier épisode de la première émission.
     try:
         page.click("#s-podcasts .sec-head")
@@ -212,6 +232,7 @@ def main():
         for r in report["radios"]:
             lines.append("radio %-22s %s en %ss | %s | logo : %s" % (r["station"], "LECTURE OK" if r["lecture"] else "ÉCHEC (%s)" % r["etat"], r["delai_s"], r["source"][:70], r["logo"][:110]))
         lines.append("podcast : %s" % json.dumps(report.get("podcast"), ensure_ascii=False))
+        lines.append("rotation : %s" % json.dumps(report.get("rotation"), ensure_ascii=False))
     if report.get("webkit"):
         lines.append("webkit : " + report["webkit"])
     text = "\n".join(lines)
