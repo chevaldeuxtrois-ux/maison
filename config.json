@@ -52,10 +52,10 @@
       "lookup": "France Musique",
       "country": "FR",
       "logo": [
+        "https://upload.wikimedia.org/wikipedia/commons/6/6c/France_Musique_logo_2021.svg",
         "https://commons.wikimedia.org/wiki/Special:FilePath/France_Musique_logo_2021.svg"
       ],
-      "site": "https://www.radiofrance.fr/francemusique",
-      "logo_search": "France Musique logo"
+      "site": "https://www.radiofrance.fr/francemusique"
     },
     {
       "id": "fip",
@@ -65,9 +65,9 @@
       "lookup": "FIP",
       "country": "FR",
       "logo": [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/FIP_logo_2021.svg",
         "https://charte.radiofrance.fr/images/fip/fip-avatar.png"
-      ],
-      "logo_search": "FIP radio logo"
+      ]
     },
     {
       "id": "mouv",
@@ -77,9 +77,9 @@
       "lookup": "Mouv",
       "country": "FR",
       "logo": [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Mouv_logo_2022.svg",
         "https://charte.radiofrance.fr/images/mouv/mouv-avatar.png"
-      ],
-      "logo_search": "Mouv' radio logo"
+      ]
     },
     {
       "id": "fipjazz",
@@ -88,8 +88,7 @@
       "short": "FIP Jazz",
       "lookup": "FIP Jazz",
       "country": "FR",
-      "logo": [],
-      "logo_search": "FIP Jazz"
+      "logo": []
     },
     {
       "id": "fipgroove",
@@ -98,8 +97,7 @@
       "short": "FIP Groove",
       "lookup": "FIP Groove",
       "country": "FR",
-      "logo": [],
-      "logo_search": "FIP Groove"
+      "logo": []
     },
     {
       "id": "pommedapi",
@@ -107,9 +105,11 @@
       "short": "Pomme d'Api",
       "lookup": "Pomme d'Api",
       "country": "FR",
-      "logo": [],
-      "site": "https://www.radiopommedapi.com/",
-      "logo_search": "Pomme d'Api radio"
+      "logo": [
+        "https://tout.bayard-jeunesse.com/wp-content/uploads/2025/08/PAP-Radio-Pommedapi-MEA.jpg",
+        "https://tout.bayard-jeunesse.com/wp-content/uploads/2025/07/cropped-favicon-192x192.png"
+      ],
+      "site": "https://www.radiopommedapi.com/"
     },
     {
       "id": "couleur3",
@@ -201,11 +201,10 @@
       "lookup": "KDAY",
       "country": "US",
       "logo": [
-        "https://commons.wikimedia.org/wiki/Special:FilePath/KDAY_logo.png",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/KDAY_93.5_logo.png"
+        "https://media-cdn.socastsrm.com/uploads/station/3559/fbShare.png?r=100307",
+        "https://media-cdn.socastsrm.com/uploads/station/3559/squareIcon.png?r=100308"
       ],
-      "site": "https://www.935kday.com/",
-      "logo_search": "KDAY logo"
+      "site": "https://www.935kday.com/"
     },
     {
       "id": "hot97",
@@ -254,8 +253,7 @@
         "https://commons.wikimedia.org/wiki/Special:FilePath/WKCR_logo.png",
         "https://commons.wikimedia.org/wiki/Special:FilePath/WKCR-FM_logo.png"
       ],
-      "site": "https://www.cc-seas.columbia.edu/wkcr/",
-      "logo_search": "WKCR"
+      "site": "https://www.wkcr.org/"
     }
   ],
   "news": [

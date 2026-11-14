@@ -225,18 +225,18 @@ def find_logo(st, prev):
     Ordre : adresses des réglages, puis images déclarées par le site de la station, puis fiche de la station
     (même nom, même pays) dans l'annuaire radio-browser.info. Chaque adresse doit répondre par une image.
     """
-    if prev and prev.get("logo") and str(prev.get("logo_from", "")).startswith("v3 "):
+    if prev and prev.get("logo") and str(prev.get("logo_from", "")).startswith("v4 "):
         return prev["logo"], prev["logo_from"]
     for url in st.get("logo", []):
         info = image_info(url)
         if info:
-            return info[0], "v3 réglages (%s, %d octets)" % info[1:]
+            return info[0], "v4 réglages (%s, %d octets)" % info[1:]
     if st.get("site"):
         try:
             for url in site_icons(st["site"])[:6]:
                 info = image_info(url)
                 if info:
-                    return info[0], "v3 site %s (%s, %d octets)" % (st["site"], info[1], info[2])
+                    return info[0], "v4 site %s (%s, %d octets)" % (st["site"], info[1], info[2])
         except Exception as ex:
             log("logo %s : site illisible (%s)" % (st["id"], ex))
     wanted = [plain(st.get("lookup", "")), plain(st["name"]), plain(st.get("short", ""))]
@@ -252,7 +252,7 @@ def find_logo(st, prev):
         seen.add(url)
         info = image_info(url)
         if info:
-            return info[0], "v3 annuaire : %s (%s, %d octets)" % (r.get("name", ""), info[1], info[2])
+            return info[0], "v4 annuaire : %s (%s, %d octets)" % (r.get("name", ""), info[1], info[2])
     return "", "aucun logo vérifié"
 
 
