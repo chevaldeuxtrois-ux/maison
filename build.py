@@ -18,7 +18,7 @@ from concurrent.futures import ThreadPoolExecutor
 from email.utils import parsedate_to_datetime
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) DashboardMaison/2.0"
+UA = "Mozilla/5.0 (compatible; DashboardMaison/2.0; +https://github.com/chevaldeuxtrois-ux/maison)"
 ITUNES = "{http://www.itunes.com/dtds/podcast-1.0.dtd}"
 EPISODES = 8
 
@@ -193,15 +193,23 @@ def plain(text):
     return re.sub(r"[^a-z0-9]", "", text)
 
 
-def image_info(url):
+def image_info(url, why=None):
     """(adresse finale, type, taille) si l'adresse répond bien par une image, sinon None."""
-    try:
-        ctype, final, data = read_some(url, 600000, 12)
-    except Exception:
-        return None
-    low = ctype.lower()
-    if low.startswith("image/") and "icon" not in low and len(data) >= 1200 and final.startswith("https://"):
-        return final, ctype, len(data)
+    last = ""
+    for attempt in range(2):
+        try:
+            ctype, final, data = read_some(url, 600000, 12)
+        except Exception as ex:
+            last = str(ex)
+            time.sleep(2)          # les serveurs d'images limitent parfois les rafales
+            continue
+        low = ctype.lower()
+        if low.startswith("image/") and "icon" not in low and len(data) >= 300 and final.startswith("https://"):
+            return final, ctype, len(data)
+        last = "%s, %d octets" % (ctype, len(data))
+        break
+    if why is not None:
+        why.append("%s -> %s" % (url[-60:], last))
     return None
 
 
@@ -225,18 +233,23 @@ def find_logo(st, prev):
     Ordre : adresses des réglages, puis images déclarées par le site de la station, puis fiche de la station
     (même nom, même pays) dans l'annuaire radio-browser.info. Chaque adresse doit répondre par une image.
     """
-    if prev and prev.get("logo") and str(prev.get("logo_from", "")).startswith("v4 "):
+    if prev and prev.get("logo") and str(prev.get("logo_from", "")).startswith("v5 "):
         return prev["logo"], prev["logo_from"]
+    why = []
     for url in st.get("logo", []):
-        info = image_info(url)
+        info = image_info(url, why)
         if info:
-            return info[0], "v4 réglages (%s, %d octets)" % info[1:]
+            return info[0], "v5 réglages (%s, %d octets)" % info[1:]
+    if why:
+        log("logo %s : adresses des réglages refusées : %s" % (st["id"], " ; ".join(why)))
     if st.get("site"):
         try:
-            for url in site_icons(st["site"])[:6]:
-                info = image_info(url)
+            icons = site_icons(st["site"])[:6]
+            log("logo %s : images du site : %s" % (st["id"], " ; ".join(icons) or "aucune"))
+            for url in icons:
+                info = image_info(url, why)
                 if info:
-                    return info[0], "v4 site %s (%s, %d octets)" % (st["site"], info[1], info[2])
+                    return info[0], "v5 site %s (%s, %d octets)" % (st["site"], info[1], info[2])
         except Exception as ex:
             log("logo %s : site illisible (%s)" % (st["id"], ex))
     wanted = [plain(st.get("lookup", "")), plain(st["name"]), plain(st.get("short", ""))]
@@ -252,7 +265,7 @@ def find_logo(st, prev):
         seen.add(url)
         info = image_info(url)
         if info:
-            return info[0], "v4 annuaire : %s (%s, %d octets)" % (r.get("name", ""), info[1], info[2])
+            return info[0], "v5 annuaire : %s (%s, %d octets)" % (r.get("name", ""), info[1], info[2])
     return "", "aucun logo vérifié"
 
 
