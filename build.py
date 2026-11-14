@@ -335,6 +335,19 @@ def main():
         except Exception as ex:
             s["logo"], s["logo_from"] = "", "erreur : %s" % ex
         log("bilan logo %s | %s | %s" % (st["id"], s["logo"], s["logo_from"]))
+        if st.get("logo_search"):      # aide au choix d'un logo : fichiers proposés par Wikimedia Commons et par le site
+            try:
+                q = urllib.parse.urlencode({"action": "query", "format": "json", "list": "search", "srnamespace": 6,
+                                            "srlimit": 12, "srsearch": st["logo_search"]})
+                hits = json.loads(fetch("https://commons.wikimedia.org/w/api.php?" + q).decode("utf-8"))["query"]["search"]
+                log("pistes logo %s (Commons) : %s" % (st["id"], " ; ".join(h["title"] for h in hits)))
+            except Exception as ex:
+                log("pistes logo %s (Commons) : erreur %s" % (st["id"], ex))
+            if st.get("site"):
+                try:
+                    log("pistes logo %s (site) : %s" % (st["id"], " ; ".join(site_icons(st["site"])[:8])))
+                except Exception as ex:
+                    log("pistes logo %s (site) : erreur %s" % (st["id"], ex))
         log("bilan radio %s | %s | %s | %s" % (st["id"], s["url"], s.get("check"), (s.get("final") or "")[:90]))
         if s["url"]:
             stations.append(s)

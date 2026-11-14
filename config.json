@@ -54,7 +54,8 @@
       "logo": [
         "https://commons.wikimedia.org/wiki/Special:FilePath/France_Musique_logo_2021.svg"
       ],
-      "site": "https://www.radiofrance.fr/francemusique"
+      "site": "https://www.radiofrance.fr/francemusique",
+      "logo_search": "France Musique logo"
     },
     {
       "id": "fip",
@@ -65,7 +66,8 @@
       "country": "FR",
       "logo": [
         "https://charte.radiofrance.fr/images/fip/fip-avatar.png"
-      ]
+      ],
+      "logo_search": "FIP radio logo"
     },
     {
       "id": "mouv",
@@ -76,7 +78,8 @@
       "country": "FR",
       "logo": [
         "https://charte.radiofrance.fr/images/mouv/mouv-avatar.png"
-      ]
+      ],
+      "logo_search": "Mouv' radio logo"
     },
     {
       "id": "fipjazz",
@@ -85,7 +88,8 @@
       "short": "FIP Jazz",
       "lookup": "FIP Jazz",
       "country": "FR",
-      "logo": []
+      "logo": [],
+      "logo_search": "FIP Jazz"
     },
     {
       "id": "fipgroove",
@@ -94,7 +98,8 @@
       "short": "FIP Groove",
       "lookup": "FIP Groove",
       "country": "FR",
-      "logo": []
+      "logo": [],
+      "logo_search": "FIP Groove"
     },
     {
       "id": "pommedapi",
@@ -103,7 +108,8 @@
       "lookup": "Pomme d'Api",
       "country": "FR",
       "logo": [],
-      "site": "https://www.radiopommedapi.com/"
+      "site": "https://www.radiopommedapi.com/",
+      "logo_search": "Pomme d'Api radio"
     },
     {
       "id": "couleur3",
@@ -198,7 +204,8 @@
         "https://commons.wikimedia.org/wiki/Special:FilePath/KDAY_logo.png",
         "https://commons.wikimedia.org/wiki/Special:FilePath/KDAY_93.5_logo.png"
       ],
-      "site": "https://www.935kday.com/"
+      "site": "https://www.935kday.com/",
+      "logo_search": "KDAY logo"
     },
     {
       "id": "hot97",
@@ -247,7 +254,8 @@
         "https://commons.wikimedia.org/wiki/Special:FilePath/WKCR_logo.png",
         "https://commons.wikimedia.org/wiki/Special:FilePath/WKCR-FM_logo.png"
       ],
-      "site": "https://www.cc-seas.columbia.edu/wkcr/"
+      "site": "https://www.cc-seas.columbia.edu/wkcr/",
+      "logo_search": "WKCR"
     }
   ],
   "news": [

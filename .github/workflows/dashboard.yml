@@ -34,7 +34,7 @@ jobs:
       - id: deploy
         uses: actions/deploy-pages@v4
       - name: Essais dans un vrai navigateur (après une modification)
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && !contains(github.event.head_commit.message, '[sans essais]')
         continue-on-error: true
         run: |
           python3 -m pip install --quiet --user --break-system-packages playwright
@@ -42,7 +42,7 @@ jobs:
           sleep 20
           python3 tests/verifier.py --url "https://chevaldeuxtrois-ux.github.io/maison/?v=${GITHUB_SHA}" --out captures --audio --webkit
       - name: Publier le rapport d'essais
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && !contains(github.event.head_commit.message, '[sans essais]')
         continue-on-error: true
         run: |
           cd captures
