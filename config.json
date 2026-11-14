@@ -184,12 +184,9 @@
       "lookup": "NRJ",
       "country": "FR",
       "logo": [
-        "https://commons.wikimedia.org/wiki/Special:FilePath/NRJ_logo_2024.svg",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/NRJ_Logo.svg",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/NRJ_logo.svg"
+        "https://commons.wikimedia.org/wiki/Special:FilePath/NRJ_Radio.png"
       ],
       "site": "https://www.nrj.fr/",
-      "logo_search": "NRJ radio logo",
       "group": "Sélection par genre"
     },
     {
@@ -201,11 +198,10 @@
       "lookup": "KEXP",
       "country": "US",
       "logo": [
-        "https://commons.wikimedia.org/wiki/Special:FilePath/KEXP_logo.svg",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/KEXP-FM_logo.svg"
+        "https://commons.wikimedia.org/wiki/Special:FilePath/KEXP_logo_2022_(one-color).svg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/KEXP_logo_(black_on_orange).svg"
       ],
       "site": "https://www.kexp.org/",
-      "logo_search": "KEXP logo",
       "group": "Sélection par genre"
     },
     {
@@ -221,7 +217,6 @@
         "https://commons.wikimedia.org/wiki/Special:FilePath/WBGO_logo.png"
       ],
       "site": "https://www.wbgo.org/",
-      "logo_search": "WBGO logo",
       "group": "Sélection par genre"
     },
     {
@@ -233,7 +228,6 @@
       "country": "GB",
       "logo": [],
       "site": "https://www.solarradio.com/",
-      "logo_search": "Solar Radio logo",
       "group": "Sélection par genre"
     },
     {
@@ -246,7 +240,6 @@
       "country": "ES",
       "logo": [],
       "site": "https://ibizaglobalradio.com/",
-      "logo_search": "Ibiza Global Radio logo",
       "group": "Sélection par genre"
     },
     {
@@ -254,8 +247,8 @@
       "name": "BBC Radio 1Xtra",
       "short": "BBC 1Xtra",
       "genre": "Hip-hop",
-      "url": "https://as-hls-ww-live.akamaized.net/pool_01505109/live/ww/bbc_1xtra/bbc_1xtra.isml/bbc_1xtra-audio%3d96000.norewind.m3u8",
-      "lookup": "BBC Radio 1Xtra",
+      "url": "https://as-hls-ww-live.akamaized.net/pool_92079267/live/ww/bbc_1xtra/bbc_1xtra.isml/bbc_1xtra-audio%3d96000.norewind.m3u8",
+      "lookup": "1Xtra",
       "country": "GB",
       "logo": [
         "https://commons.wikimedia.org/wiki/Special:FilePath/BBC_Radio_1Xtra_2022.svg",
@@ -263,8 +256,12 @@
         "https://commons.wikimedia.org/wiki/Special:FilePath/BBC_Radio_1Xtra.svg",
         "https://rmp.files.bbci.co.uk/rmp-shared-assets/1.4.0/img/network-logos/national/bbc_1xtra_colour.svg"
       ],
-      "logo_search": "BBC Radio 1Xtra logo",
-      "group": "Sélection par genre"
+      "group": "Sélection par genre",
+      "alt": [
+        "https://as-hls-ww-live.akamaized.net/pool_904/live/ww/bbc_1xtra/bbc_1xtra.isml/bbc_1xtra-audio%3d96000.norewind.m3u8",
+        "https://a.files.bbci.co.uk/ms6/live/3441A116-B12E-4D2F-ACA8-C1984642FA4B/audio/simulcast/hls/nonuk/pc_hd_abr_v2/ak/bbc_1xtra.m3u8",
+        "https://lsn.lv/bbcradio.m3u8?station=bbc_1xtra&bitrate=96000"
+      ]
     },
     {
       "id": "wqxr",
@@ -279,7 +276,6 @@
         "https://commons.wikimedia.org/wiki/Special:FilePath/WQXR-FM_logo.svg"
       ],
       "site": "https://www.wqxr.org/",
-      "logo_search": "WQXR logo",
       "group": "Sélection par genre"
     },
     {
