@@ -188,9 +188,8 @@
       "url": "https://as-hls-ww-live.akamaized.net/pool_01505109/live/ww/bbc_radio_one/bbc_radio_one.isml/bbc_radio_one-audio%3d96000.norewind.m3u8",
       "country": "GB",
       "logo": [
-        "https://rmp.files.bbci.co.uk/rmp-shared-assets/1.4.0/img/network-logos/national/bbc_radio_one_colour.svg",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/BBC_Radio_1_2022.svg",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/BBC_Radio_1_2021.svg"
+        "https://commons.wikimedia.org/wiki/Special:FilePath/BBC_Radio_1_2021.svg",
+        "https://rmp.files.bbci.co.uk/rmp-shared-assets/1.4.0/img/network-logos/national/bbc_radio_one_colour.svg"
       ]
     },
     {
@@ -223,11 +222,7 @@
       "url": "https://live.amperwave.net/direct/audacy-krthfmaac-imc",
       "lookup": "KRTH",
       "country": "US",
-      "logo": [
-        "https://commons.wikimedia.org/wiki/Special:FilePath/KRTH_K-EARTH_101_logo.svg",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/KRTH-FM_logo.png",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/K-Earth_101_logo.png"
-      ],
+      "logo": [],
       "site": "https://www.audacy.com/kearth101"
     },
     {
@@ -249,10 +244,7 @@
       "url": "https://wkcr.streamguys1.com/live",
       "lookup": "WKCR",
       "country": "US",
-      "logo": [
-        "https://commons.wikimedia.org/wiki/Special:FilePath/WKCR_logo.png",
-        "https://commons.wikimedia.org/wiki/Special:FilePath/WKCR-FM_logo.png"
-      ],
+      "logo": [],
       "site": "https://www.wkcr.org/"
     }
   ],
